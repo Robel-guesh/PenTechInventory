@@ -1,0 +1,79 @@
+catagory 
+name
+
+
+Measurement
+group
+    name
+    quantity
+
+
+GoodsStatus
+ name
+
+
+Role
+ name
+
+
+Goods
+goodsName
+catagoryId
+unitOfmeasure
+qty
+unitPrice
+sellingPrice
+discount
+registeredDate
+statusId
+type
+id
+prescription
+supplierId
+storeLocation
+shortageLevel
+registeredBy
+photo
+
+
+
+Store
+name
+location
+id
+
+Supplier
+name
+invoiceNumber
+
+
+Withdraw
+customerName
+nameOfGoods
+amount
+date
+reason 
+         gift ,internaluse, sells
+
+status pending
+returned false
+sellerName
+
+
+Users
+userName
+sex
+id
+email
+password
+photo
+role
+isAdmin false
+
+
+Type
+typeName  temporary, fixed
+
+
+
+

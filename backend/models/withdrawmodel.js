@@ -1,49 +1,43 @@
 const mongoose = require("mongoose");
 
-// Define the schema for the Withdraw model
 const withdrawSchema = new mongoose.Schema({
   customerName: {
     type: String,
-    required: true, // Customer name is mandatory
-    trim: true, // Remove any leading/trailing spaces
+    required: true,
+    trim: true,
   },
   nameOfGoods: {
     type: String,
-    required: true, // Goods name is mandatory
-    trim: true, // Remove any leading/trailing spaces
+    required: true,
+    trim: true,
   },
   amount: {
     type: Number,
-    required: true, // Amount is mandatory
-    min: 0, // Ensure the amount can't be negative
+    required: true,
+    min: 0,
   },
   date: {
     type: Date,
-    default: Date.now, // Default to the current date and time
+    default: Date.now,
   },
   reason: {
     type: String,
-    enum: ["gift", "internaluse", "sells"], // Reason can only be one of these
-    required: true, // Reason is mandatory
+    required: true,
   },
   status: {
     type: String,
-    enum: ["pending", "approved", "rejected"], // Enum for status
-    default: "pending", // Default status is 'pending'
+    default: "pending",
   },
   returned: {
     type: Boolean,
-    default: false, // Default is false (goods have not been returned)
+    default: false,
   },
   sellerName: {
     type: String,
-    required: true, // Seller name is mandatory
-    trim: true, // Remove any leading/trailing spaces
+    required: true,
   },
 });
 
-// Create the Withdraw model from the schema
-const Withdraw = mongoose.model("Withdraw", withdrawSchema);
+const WithdrawModel = mongoose.model("WithdrawModel", withdrawSchema);
 
-// Export the Withdraw model to use it in other parts of the app
-module.exports = Withdraw;
+module.exports = WithdrawModel;

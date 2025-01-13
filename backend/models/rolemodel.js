@@ -4,14 +4,12 @@ const mongoose = require("mongoose");
 const roleSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true, // Ensures 'name' is mandatory
-    unique: true, // Ensures 'name' is unique
-    trim: true, // Removes any leading or trailing whitespace
+    default: "user",
   },
 });
 
 // Create the Role model from the schema
-const Role = mongoose.model("Role", roleSchema);
+const RoleModel = mongoose.model("RoleModel", roleSchema);
 
 // Export the model to use it in other parts of the app
-module.exports = Role;
+module.exports = RoleModel;

@@ -14,8 +14,7 @@ const goodsSchema = new mongoose.Schema({
   },
   unitOfMeasure: {
     type: String,
-    required: true, // Required field
-    enum: ["kg", "pcs", "ltr", "m", "box"], // Example units, can be expanded
+    required: true,
   },
   qty: {
     type: Number,
@@ -29,52 +28,49 @@ const goodsSchema = new mongoose.Schema({
   },
   sellingPrice: {
     type: Number,
-    required: true, // Selling price is required
-    min: 0, // Ensure price is not negative
+    min: 0,
   },
   discount: {
     type: Number,
-    min: 0, // Discount cannot be negative
-    max: 100, // Discount can’t exceed 100%
-    default: 0, // Default discount is 0
+    min: 0,
+    max: 100,
+    default: 0,
   },
   registeredDate: {
     type: Date,
-    default: Date.now, // Default is the current date/time
+    default: Date.now,
   },
   statusId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "GoodsStatus", // Reference to a GoodsStatus model (you can define this separately)
+    ref: "GoodsStatus",
     required: true,
   },
   type: {
     type: String,
-    enum: ["Normal", "Prescription", "Perishable"], // Example types
-    required: true, // Type is required
+    // enum: ["Normal", "Prescription", "Perishable"],
+    required: true,
   },
   id: {
     type: String,
     required: true,
-    unique: true, // ID should be unique (e.g., SKU or internal code)
-    trim: true, // Remove leading/trailing spaces
+    unique: true,
   },
   prescription: {
-    type: Boolean,
-    default: false, // Default is false, meaning it doesn’t require a prescription
+    type: String,
   },
   supplierId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Supplier", // Reference to a Supplier model (you can define this separately)
+    ref: "Supplier",
     required: true,
   },
   storeLocation: {
     type: String,
-    required: true, // Location is required
+    required: true,
   },
   shortageLevel: {
     type: Number,
     required: true,
-    min: 0, // Ensure shortage level can't be negative
+    min: 0,
   },
   registeredBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -82,13 +78,11 @@ const goodsSchema = new mongoose.Schema({
     required: true,
   },
   photo: {
-    type: String, // URL or path to the photo
-    trim: true, // Trim any spaces
+    type: String,
   },
 });
 
-// Create the Goods model from the schema
-const Goods = mongoose.model("Goods", goodsSchema);
+const GoodsModel = mongoose.model("GoodsModel", goodsSchema);
 
 // Export the Goods model to use it in other parts of the app
-module.exports = Goods;
+module.exports = GoodsModel;

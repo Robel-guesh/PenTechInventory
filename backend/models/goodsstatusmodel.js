@@ -4,14 +4,11 @@ const mongoose = require("mongoose");
 const goodsStatusSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true, // Ensures 'name' is mandatory
-    unique: true, // Ensures 'name' is unique
-    trim: true, // Removes any leading or trailing whitespace
   },
 });
 
 // Create the GoodsStatus model from the schema
-const GoodsStatus = mongoose.model("GoodsStatus", goodsStatusSchema);
+const GoodsStatusModel = mongoose.model("GoodsStatusModel", goodsStatusSchema);
 
 // Export the model to use it in other parts of the app
-module.exports = GoodsStatus;
+module.exports = GoodsStatusModel;

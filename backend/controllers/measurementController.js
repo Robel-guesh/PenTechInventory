@@ -10,12 +10,10 @@ exports.createMeasurement = async (req, res) => {
     });
 
     await measurementData.save();
-    res
-      .status(201)
-      .json({
-        message: "Measurement created successfully",
-        measurement: measurementData,
-      });
+    res.status(201).json({
+      message: "Measurement created successfully",
+      data: measurementData,
+    });
   } catch (error) {
     res.status(500).json({ error: "Server error while creating measurement" });
   }
@@ -25,7 +23,7 @@ exports.createMeasurement = async (req, res) => {
 exports.getAllMeasurements = async (req, res) => {
   try {
     const measurements = await measurement.find();
-    res.status(200).json(measurements);
+    res.status(200).json({ data: measurements });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving measurements" });
   }
@@ -40,7 +38,7 @@ exports.getMeasurementById = async (req, res) => {
       return res.status(404).json({ message: "Measurement not found" });
     }
 
-    res.status(200).json(measurementData);
+    res.status(200).json({ data: measurementData });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving the measurement" });
   }
@@ -63,12 +61,10 @@ exports.updateMeasurement = async (req, res) => {
       return res.status(404).json({ message: "Measurement not found" });
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Measurement updated successfully",
-        measurement: measurementData,
-      });
+    res.status(200).json({
+      message: "Measurement updated successfully",
+      data: measurementData,
+    });
   } catch (error) {
     res.status(500).json({ error: "Error updating measurement" });
   }

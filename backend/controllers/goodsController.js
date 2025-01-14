@@ -1,4 +1,4 @@
-const goods = require("../models/goodsModel");
+const goods = require("../models/goods");
 
 // Create a new good
 exports.createGood = async (req, res) => {
@@ -17,7 +17,7 @@ exports.createGood = async (req, res) => {
     await goodData.save();
     res
       .status(201)
-      .json({ message: "Good created successfully", good: goodData });
+      .json({ message: "Good created successfully", data: goodData });
   } catch (error) {
     res.status(500).json({ error: "Server error while creating good" });
   }
@@ -31,8 +31,8 @@ exports.getAllGoods = async (req, res) => {
       .populate("catagoryId", "name") // Populating category model's name field
       .populate("unitOfMeasureId", "groupName name qty") // Populating measurement model's fields
       .exec();
-    res.status(200).json(goodsList);
-    res.send("helo");
+    res.status(200).json({ data: goodsList });
+    // res.send("helo");
   } catch (error) {
     res.status(500).json({ error: "Error retrieving goods" });
   }
@@ -51,7 +51,7 @@ exports.getGoodById = async (req, res) => {
       return res.status(404).json({ message: "Good not found" });
     }
 
-    res.status(200).json(goodData);
+    res.status(200).json({ data: goodData });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving the good" });
   }
@@ -81,7 +81,7 @@ exports.updateGood = async (req, res) => {
 
     res
       .status(200)
-      .json({ message: "Good updated successfully", good: goodData });
+      .json({ message: "Good updated successfully", data: goodData });
   } catch (error) {
     res.status(500).json({ error: "Error updating good" });
   }

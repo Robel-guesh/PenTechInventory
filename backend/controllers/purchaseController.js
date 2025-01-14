@@ -16,12 +16,10 @@ exports.createPurchase = async (req, res) => {
     });
 
     await purchaseData.save();
-    res
-      .status(201)
-      .json({
-        message: "Purchase created successfully",
-        purchase: purchaseData,
-      });
+    res.status(201).json({
+      message: "Purchase created successfully",
+      purchase: purchaseData,
+    });
   } catch (error) {
     res.status(500).json({ error: "Server error while creating purchase" });
   }
@@ -92,12 +90,10 @@ exports.updatePurchase = async (req, res) => {
       return res.status(404).json({ message: "Purchase not found" });
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Purchase updated successfully",
-        purchase: purchaseData,
-      });
+    res.status(200).json({
+      message: "Purchase updated successfully",
+      data: purchaseData,
+    });
   } catch (error) {
     res.status(500).json({ error: "Error updating purchase" });
   }

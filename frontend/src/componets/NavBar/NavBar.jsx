@@ -1,15 +1,17 @@
 import React from "react";
 import logo from "../../assets/logo.png";
 import profile_photo from "../../assets/profilePhoto.png";
-function NavBar(Props) {
+import { useAppContext } from "../../contexts/AppContext";
+function NavBar() {
   const {
     toggleDarkMode,
     toggleLanguage,
     darkMode,
     language,
     defaultBackground,
-  } = Props;
-  const userName = "Robel Guesh";
+    userName,
+  } = useAppContext();
+
   return (
     <div
       className={`d-flex justify-content-between align-items-center ${
@@ -30,7 +32,7 @@ function NavBar(Props) {
           <div className=" mx-3 ">{userName}</div>
         </div>
         <div onClick={() => toggleLanguage()}>
-          {language === "eng" ? "ትግ" : "En"}
+          {language === "eng" ? "En" : "ትግ"}
         </div>
         <div onClick={() => toggleDarkMode()}>
           <span

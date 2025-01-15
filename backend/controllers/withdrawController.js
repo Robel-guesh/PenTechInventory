@@ -15,12 +15,10 @@ exports.createWithdraw = async (req, res) => {
     });
 
     await withdrawData.save();
-    res
-      .status(201)
-      .json({
-        message: "Withdraw created successfully",
-        withdraw: withdrawData,
-      });
+    res.status(201).json({
+      message: "Withdraw created successfully",
+      data: withdrawData,
+    });
   } catch (error) {
     res.status(500).json({ error: "Server error while creating withdraw" });
   }
@@ -36,7 +34,7 @@ exports.getAllWithdraws = async (req, res) => {
       .populate("sellerId", "name email") // Assuming 'user' has 'name' and 'email'
       .populate("reasonId", "reason") // Assuming 'reason' has 'reason' field
       .exec();
-    res.status(200).json(withdraws);
+    res.status(200).json({ data: withdraws });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving withdraws" });
   }
@@ -56,7 +54,7 @@ exports.getWithdrawById = async (req, res) => {
     if (!withdrawData) {
       return res.status(404).json({ message: "Withdraw not found" });
     }
-    res.status(200).json(withdrawData);
+    res.status(200).json({ data: withdrawData });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving the withdraw" });
   }
@@ -84,12 +82,10 @@ exports.updateWithdraw = async (req, res) => {
       return res.status(404).json({ message: "Withdraw not found" });
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Withdraw updated successfully",
-        withdraw: withdrawData,
-      });
+    res.status(200).json({
+      message: "Withdraw updated successfully",
+      data: withdrawData,
+    });
   } catch (error) {
     res.status(500).json({ error: "Error updating withdraw" });
   }

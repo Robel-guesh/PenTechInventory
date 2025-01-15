@@ -10,12 +10,10 @@ exports.createSupplier = async (req, res) => {
     });
 
     await supplierData.save();
-    res
-      .status(201)
-      .json({
-        message: "Supplier created successfully",
-        supplier: supplierData,
-      });
+    res.status(201).json({
+      message: "Supplier created successfully",
+      data: supplierData,
+    });
   } catch (error) {
     res.status(500).json({ error: "Server error while creating supplier" });
   }
@@ -25,7 +23,7 @@ exports.createSupplier = async (req, res) => {
 exports.getAllSuppliers = async (req, res) => {
   try {
     const suppliers = await supplier.find();
-    res.status(200).json(suppliers);
+    res.status(200).json({ data: suppliers });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving suppliers" });
   }
@@ -40,7 +38,7 @@ exports.getSupplierById = async (req, res) => {
       return res.status(404).json({ message: "Supplier not found" });
     }
 
-    res.status(200).json(supplierData);
+    res.status(200).json({ data: supplierData });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving the supplier" });
   }
@@ -63,12 +61,10 @@ exports.updateSupplier = async (req, res) => {
       return res.status(404).json({ message: "Supplier not found" });
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Supplier updated successfully",
-        supplier: supplierData,
-      });
+    res.status(200).json({
+      message: "Supplier updated successfully",
+      data: supplierData,
+    });
   } catch (error) {
     res.status(500).json({ error: "Error updating supplier" });
   }

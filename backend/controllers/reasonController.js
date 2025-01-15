@@ -5,13 +5,13 @@ exports.createReason = async (req, res) => {
   try {
     const reasonData = new reason({
       name: req.body.name,
-      reason: req.body.reason,
+      // reason: req.body.reason,
     });
 
     await reasonData.save();
     res
       .status(201)
-      .json({ message: "reason created successfully", reason: reasonData });
+      .json({ message: "reason created successfully", data: reasonData });
   } catch (error) {
     res.status(500).json({ error: "Server error while creating reason" });
   }
@@ -21,7 +21,7 @@ exports.createReason = async (req, res) => {
 exports.getAllReasons = async (req, res) => {
   try {
     const reasons = await reason.find();
-    res.status(200).json(reasons);
+    res.status(200).json({ data: reasons });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving reasons" });
   }
@@ -34,7 +34,7 @@ exports.getReasonById = async (req, res) => {
     if (!reasonData) {
       return res.status(404).json({ message: "reason not found" });
     }
-    res.status(200).json(reasonData);
+    res.status(200).json({ data: reasonData });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving the reason" });
   }
@@ -45,7 +45,7 @@ exports.updateReason = async (req, res) => {
   try {
     const reasonData = await reason.findByIdAndUpdate(
       req.params.id,
-      { name: req.body.name, reason: req.body.reason },
+      { name: req.body.name },
       { new: true }
     );
     if (!reasonData) {
@@ -53,7 +53,7 @@ exports.updateReason = async (req, res) => {
     }
     res
       .status(200)
-      .json({ message: "reason updated successfully", reason: reasonData });
+      .json({ message: "reason updated successfully", data: reasonData });
   } catch (error) {
     res.status(500).json({ error: "Error updating reason" });
   }

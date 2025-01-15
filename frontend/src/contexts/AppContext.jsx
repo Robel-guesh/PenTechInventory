@@ -14,6 +14,14 @@ export const AppProvider = ({ children }) => {
   // const [currentLanguage, setCurrentLanguage] = useState("eng");
   const [backendUrl, setBackendUrl] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+  const companyName = "PTSC";
+  const catagoryList = {
+    furniture: "fur",
+    electronic: "ele",
+    stationary: "sta",
+    book: "book",
+    medical: "med",
+  };
   const translationData = {
     "ADD TO CART": { eng: "add to cart", tig: "nab zembil aetu" },
     ORDER: { eng: "order", tig: "azz" },

@@ -5,17 +5,14 @@ const withdrawSchema = new mongoose.Schema({
   customerName: {
     type: String,
     trim: true,
-    required: false, // Not required
   },
   customerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
-    required: true,
   },
   goodsId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "goods",
-    required: true,
   },
   sellerId: {
     type: mongoose.Schema.Types.ObjectId,

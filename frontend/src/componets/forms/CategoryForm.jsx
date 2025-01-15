@@ -12,9 +12,9 @@ function CategoryForm() {
       const response = await axios.post(`${backendUrl}${categoryRoute}`, {
         name,
       });
-      console.log(response.data.message);
+      alert(response.data.message);
     } catch (error) {
-      console.log(error.response?.data?.message || error.message);
+      alert(error.response?.data?.message || error.message);
     }
   };
   return (

@@ -2,25 +2,54 @@ const goods = require("../models/goods");
 
 // Create a new good
 exports.createGood = async (req, res) => {
+  const photo = req.files ? req.files.map((file) => file.path) : [];
   console.log(req.body);
+  const {
+    id,
+    name,
+    catagoryId,
+    unitOfMeasureId,
+    qty,
+    description,
+    shortageLevel,
+  } = req.body;
+
   try {
+    // Check if a good with the same id or name already exists
+    const existingGood = await goods.findOne({
+      $or: [{ id }, { name }],
+    });
+
+    if (existingGood) {
+      // If the good already exists, return an error message
+      return res.status(400).json({
+        message:
+          "Good with the same ID or name already registered insert another data",
+      });
+    }
+
+    // If no existing good, proceed to create a new good
     const goodData = new goods({
-      id: req.body.id,
-      name: req.body.name,
-      catagoryId: req.body.catagoryId,
-      unitOfMeasureId: req.body.unitOfMeasureId,
-      qty: req.body.qty,
-      photo: req.body.photo,
-      description: req.body.description,
-      shortageLevel: req.body.shortageLevel,
+      id,
+      name,
+      catagoryId,
+      unitOfMeasureId,
+      qty,
+      photo,
+      description,
+      shortageLevel,
     });
 
     await goodData.save();
-    res
-      .status(201)
-      .json({ message: "Good created successfully", data: goodData });
+    res.status(201).json({
+      message: "Good created successfully",
+      data: goodData,
+    });
   } catch (error) {
-    res.status(500).json({ error: "Server error while creating good" });
+    console.error(error); // Log the error for debugging
+    res.status(500).json({
+      error: "Server error while creating good",
+    });
   }
 };
 
@@ -60,6 +89,7 @@ exports.getGoodById = async (req, res) => {
 
 // Update a good by ID
 exports.updateGood = async (req, res) => {
+  const photo = req.files ? req.files.map((file) => file.path) : [];
   try {
     const goodData = await goods.findByIdAndUpdate(
       req.params.id,
@@ -69,7 +99,7 @@ exports.updateGood = async (req, res) => {
         catagoryId: req.body.catagoryId,
         unitOfMeasureId: req.body.unitOfMeasureId,
         qty: req.body.qty,
-        photo: req.body.photo,
+        photo: photo,
         description: req.body.description,
         shortageLevel: req.body.shortageLevel,
       },

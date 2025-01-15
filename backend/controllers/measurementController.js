@@ -2,7 +2,14 @@ const measurement = require("../models/measurement");
 
 // Create a new measurement
 exports.createMeasurement = async (req, res) => {
+  const { name } = req.body;
   try {
+    const checkIfExists = await measurement.findOne({ name });
+
+    if (checkIfExists) {
+      // If category already exists, send an error response
+      return res.status(400).json({ message: "measuremnt already exists " });
+    }
     const measurementData = new measurement({
       groupName: req.body.groupName,
       name: req.body.name,

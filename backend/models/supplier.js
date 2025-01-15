@@ -5,17 +5,14 @@ const supplierSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    trim: true,
   },
   invoiceNumber: {
     type: String,
-    required: true,
-    trim: true,
+    required: false,
   },
   mobile: {
     type: String,
-    required: true,
-    trim: true,
+    required: false,
   },
 });
 

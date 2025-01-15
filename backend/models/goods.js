@@ -6,12 +6,10 @@ const goodsSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    trim: true,
   },
   name: {
     type: String,
     required: true,
-    trim: true,
   },
   catagoryId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -25,10 +23,11 @@ const goodsSchema = new mongoose.Schema({
   },
   qty: {
     type: Number,
-    required: true,
+
+    default: 0,
   },
   photo: {
-    type: String,
+    type: [String],
     required: false, // Optional photo URL or path
   },
   description: {

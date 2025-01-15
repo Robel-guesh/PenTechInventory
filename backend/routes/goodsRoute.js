@@ -1,10 +1,10 @@
 const express = require("express");
 const route = express.Router();
 const goodsController = require("../controllers/goodsController");
-
+const upload = require("../utils/fileUpload");
 // Route for creating a new good
 
-route.post("/", goodsController.createGood);
+route.post("/", upload.array("photo"), goodsController.createGood);
 
 // Route for getting all goods
 route.get("/", goodsController.getAllGoods);
@@ -13,7 +13,7 @@ route.get("/", goodsController.getAllGoods);
 route.get("/:id", goodsController.getGoodById);
 
 // Route for updating a good by ID
-route.put("/:id", goodsController.updateGood);
+route.put("/:id", upload.array("photo"), goodsController.updateGood);
 
 // Route for deleting a good by ID
 route.delete("/:id", goodsController.deleteGood);

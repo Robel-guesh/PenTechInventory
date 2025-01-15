@@ -111,12 +111,18 @@
 .pointer {
   cursor: pointer;
 }
+.form-containers {
+  width: 350px;
+}
 @media (max-width: 650px) {
   .card-container {
     flex-basis: 400px;
     flex-grow: 1;
     width: 100%;
     height: auto;
+  }
+  .form-containers {
+    width: 100%;
   }
   .goods-img-container {
     display: flex;

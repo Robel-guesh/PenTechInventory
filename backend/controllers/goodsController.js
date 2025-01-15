@@ -2,6 +2,7 @@ const goods = require("../models/goods");
 
 // Create a new good
 exports.createGood = async (req, res) => {
+  console.log(req.body);
   try {
     const goodData = new goods({
       id: req.body.id,

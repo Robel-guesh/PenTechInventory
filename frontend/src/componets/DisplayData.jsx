@@ -6,19 +6,26 @@ import React, { useState, useEffect } from "react";
 // import image4 from "../assets/image4.png";
 // import image5 from "../assets/image5.png";
 import GoodsDisplayCard from "./cards/GoodsDisplayCard";
-import getGoodsData from "../sampleData/goodsData";
+// import getGoodsData from "../sampleData/goodsData";
 import CartsDisplayData from "./cards/CartsDisplayData";
+import axios from "axios";
+import { useAppContext } from "../contexts/AppContext";
 function DisplayData() {
   const [cartData, setCartData] = useState([]);
   const [goodsData, setGoodsData] = useState([]);
-  // setGoodsData(getGoodsData());
-  useEffect(() => {
-    // getGoodsData();
+  const [priceData, setPriceData] = useState([]);
+  const { backendUrl, translate } = useAppContext();
+  const goodsRoute = "/goods";
+  const purchaseRoute = "/purchase";
 
-    // return () => {
-    setGoodsData(getGoodsData());
-    // };
-  }, []);
+  useEffect(() => {
+    // axios.get(`${backendUrl}${goodsRoute}`).then((response) => {
+    //   setGoodsData(response.data.data);
+    // });
+    axios.get(`${backendUrl}${purchaseRoute}`).then((response) => {
+      setGoodsData(response.data.data);
+    });
+  }, [backendUrl]);
 
   const handleAddToCart = (itemName) => {
     const newCartData = [...cartData];
@@ -29,10 +36,15 @@ function DisplayData() {
 
   return (
     <div>
-      <div className="d-flex ">
-        <h3 className="w-100 text-center">your cart</h3>
-      </div>
-      <div>
+      {cartData.length > 0 && (
+        <div className="d-flex w-100 justify-content-center p-2  ">
+          <div className="bg-light d-flex  rounded-5 p-1 px-3 ">
+            <span className="bi bi-cart  me-2   "></span>
+            <div className="fw-light">{translate("your cart")}</div>
+          </div>
+        </div>
+      )}
+      <div className="bg-light p-2">
         {
           <div className="m-2 goods-main-container">
             {cartData &&
@@ -44,11 +56,13 @@ function DisplayData() {
           </div>
         }
       </div>
-      <div className="d-flex mt-5">
-        <h3 className="w-100 text-center">
-          select one of our product you want to buy
-        </h3>
-      </div>
+      {goodsData && (
+        <div className="d-flex mt-5">
+          <p className="w-100 text-center">
+            {translate("select one of our product you want to buy")}
+          </p>
+        </div>
+      )}
       <div className="m-2 goods-main-container">
         {goodsData &&
           goodsData.map((datas, index) => (

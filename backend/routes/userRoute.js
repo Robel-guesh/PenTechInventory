@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
-
+const upload = require("../utils/fileUpload");
 // Route for creating a new user
-router.post("/", userController.createUser);
+router.post("/", upload.array("photo"), userController.createUser);
 
 // Route for getting all users
 router.get("/", userController.getAllUsers);
@@ -12,8 +12,8 @@ router.get("/", userController.getAllUsers);
 router.get("/:id", userController.getUserById);
 
 // Route for updating a user by ID
-router.put("/:id", userController.updateUser);
-
+router.put("/:id", upload.array("photo"), userController.updateUser);
+router.get("/api/totalUsers", userController.getTotalUsers);
 // Route for deleting a user by ID
 router.delete("/:id", userController.deleteUser);
 

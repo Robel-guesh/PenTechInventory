@@ -10,7 +10,7 @@ exports.createStatus = async (req, res) => {
     await statusData.save();
     res
       .status(201)
-      .json({ message: "Status created successfully", status: statusData });
+      .json({ message: "Status created successfully", data: statusData });
   } catch (error) {
     res.status(500).json({ error: "Server error while creating status" });
   }
@@ -20,7 +20,7 @@ exports.createStatus = async (req, res) => {
 exports.getAllStatuses = async (req, res) => {
   try {
     const statuses = await status.find();
-    res.status(200).json(statuses);
+    res.status(200).json({ data: statuses });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving statuses" });
   }
@@ -35,7 +35,7 @@ exports.getStatusById = async (req, res) => {
       return res.status(404).json({ message: "Status not found" });
     }
 
-    res.status(200).json(statusData);
+    res.status(200).json({ data: statusData });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving the status" });
   }
@@ -56,7 +56,7 @@ exports.updateStatus = async (req, res) => {
 
     res
       .status(200)
-      .json({ message: "Status updated successfully", status: statusData });
+      .json({ message: "Status updated successfully", data: statusData });
   } catch (error) {
     res.status(500).json({ error: "Error updating status" });
   }

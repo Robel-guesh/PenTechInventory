@@ -11,7 +11,7 @@ exports.createStore = async (req, res) => {
     await storeData.save();
     res
       .status(201)
-      .json({ message: "Store created successfully", store: storeData });
+      .json({ message: "Store created successfully", data: storeData });
   } catch (error) {
     res.status(500).json({ error: "Server error while creating store" });
   }
@@ -21,7 +21,7 @@ exports.createStore = async (req, res) => {
 exports.getAllStores = async (req, res) => {
   try {
     const stores = await store.find();
-    res.status(200).json(stores);
+    res.status(200).json({ data: stores });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving stores" });
   }
@@ -36,7 +36,7 @@ exports.getStoreById = async (req, res) => {
       return res.status(404).json({ message: "Store not found" });
     }
 
-    res.status(200).json(storeData);
+    res.status(200).json({ data: storeData });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving the store" });
   }
@@ -57,7 +57,7 @@ exports.updateStore = async (req, res) => {
 
     res
       .status(200)
-      .json({ message: "Store updated successfully", store: storeData });
+      .json({ message: "Store updated successfully", data: storeData });
   } catch (error) {
     res.status(500).json({ error: "Error updating store" });
   }

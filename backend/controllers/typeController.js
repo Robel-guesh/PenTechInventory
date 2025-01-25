@@ -10,7 +10,7 @@ exports.createType = async (req, res) => {
     await typeData.save();
     res
       .status(201)
-      .json({ message: "Type created successfully", type: typeData });
+      .json({ message: "Type created successfully", data: typeData });
   } catch (error) {
     res.status(500).json({ error: "Server error while creating type" });
   }
@@ -20,7 +20,7 @@ exports.createType = async (req, res) => {
 exports.getAllTypes = async (req, res) => {
   try {
     const types = await type.find();
-    res.status(200).json(types);
+    res.status(200).json({ data: types });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving types" });
   }
@@ -35,7 +35,7 @@ exports.getTypeById = async (req, res) => {
       return res.status(404).json({ message: "Type not found" });
     }
 
-    res.status(200).json(typeData);
+    res.status(200).json({ data: typeData });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving the type" });
   }
@@ -56,7 +56,7 @@ exports.updateType = async (req, res) => {
 
     res
       .status(200)
-      .json({ message: "Type updated successfully", type: typeData });
+      .json({ message: "Type updated successfully", data: typeData });
   } catch (error) {
     res.status(500).json({ error: "Error updating type" });
   }

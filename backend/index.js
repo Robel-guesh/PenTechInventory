@@ -21,6 +21,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 connectToDb();
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/goods", goodsRoute);
 app.use("/measurement", measurementRoute);
 app.use("/purchase", purchaseRoute);
@@ -31,10 +32,11 @@ app.use("/store", storeRoute);
 app.use("/supplier", supplierRoute);
 app.use("/type", typeRoute);
 app.use("/user", userRoute);
+
 app.use("/withdraw", withdrawRoute);
 app.use("/category", categoryRoute);
 // app.use(express.urlencoded({ extended: true }));/
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

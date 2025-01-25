@@ -1,8 +1,10 @@
 const purchase = require("../models/purchase");
+const goods = require("../models/goods");
 
 // Create a new purchase
 exports.createPurchase = async (req, res) => {
   try {
+    // Create the new purchase
     const purchaseData = new purchase({
       id: req.body.id,
       qty: req.body.qty,
@@ -15,10 +17,22 @@ exports.createPurchase = async (req, res) => {
       typeId: req.body.typeId, // Changed from typeID to typeId
     });
 
+    // Save the purchase data
     await purchaseData.save();
+
+    // Update the quantity in the goods model (increase the quantity of the purchased goods)
+    const goodsData = await goods.findById(req.body.id); // Find the goods by the ID of the purchased item
+    if (!goodsData) {
+      return res.status(404).json({ message: "Goods not found" });
+    }
+
+    // Increase the goods stock by the purchased quantity
+    goodsData.qty = Number(goodsData.qty) + Number(req.body.qty);
+    await goodsData.save(); // Save the updated goods quantity
+
     res.status(201).json({
       message: "Purchase created successfully",
-      purchase: purchaseData,
+      data: purchaseData,
     });
   } catch (error) {
     res.status(500).json({ error: "Server error while creating purchase" });
@@ -30,7 +44,7 @@ exports.getAllPurchases = async (req, res) => {
   try {
     const purchases = await purchase
       .find()
-      .populate("id", "name") // Populating goods model's name field
+      .populate("id", "name photo description category")
       .populate("storeLocationId", "name location") // Populating store model's name and location fields
       .populate("userId", "name email") // Changed from userID to userId
       .populate("supplierId", "name invoiceNumber mobile") // Populating supplier model's fields
@@ -38,7 +52,7 @@ exports.getAllPurchases = async (req, res) => {
       .populate("typeId", "name") // Changed from typeID to typeId
       .exec();
 
-    res.status(200).json(purchases);
+    res.status(200).json({ data: purchases });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving purchases" });
   }
@@ -61,7 +75,7 @@ exports.getPurchaseById = async (req, res) => {
       return res.status(404).json({ message: "Purchase not found" });
     }
 
-    res.status(200).json(purchaseData);
+    res.status(200).json({ data: purchaseData });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving the purchase" });
   }
@@ -70,6 +84,27 @@ exports.getPurchaseById = async (req, res) => {
 // Update a purchase by ID
 exports.updatePurchase = async (req, res) => {
   try {
+    // Find the original purchase data
+    const originalPurchase = await purchase.findById(req.params.id);
+    if (!originalPurchase) {
+      return res.status(404).json({ message: "Purchase not found" });
+    }
+
+    // Find the goods by ID of the purchased item
+    const goodsData = await goods.findById(originalPurchase.id);
+    if (!goodsData) {
+      return res.status(404).json({ message: "Goods not found" });
+    }
+
+    // Revert the previous purchase quantity (decrease stock by original quantity)
+    goodsData.qty = Number(goodsData.qty) - Number(originalPurchase.qty);
+    await goodsData.save();
+
+    // Apply the new purchase quantity (increase stock by new quantity)
+    goodsData.qty = Number(goodsData.qty) + Number(req.body.qty);
+    await goodsData.save();
+
+    // Update the purchase data with the new details
     const purchaseData = await purchase.findByIdAndUpdate(
       req.params.id,
       {
@@ -86,10 +121,6 @@ exports.updatePurchase = async (req, res) => {
       { new: true }
     );
 
-    if (!purchaseData) {
-      return res.status(404).json({ message: "Purchase not found" });
-    }
-
     res.status(200).json({
       message: "Purchase updated successfully",
       data: purchaseData,
@@ -103,10 +134,19 @@ exports.updatePurchase = async (req, res) => {
 exports.deletePurchase = async (req, res) => {
   try {
     const purchaseData = await purchase.findByIdAndDelete(req.params.id);
-
     if (!purchaseData) {
       return res.status(404).json({ message: "Purchase not found" });
     }
+
+    // Find the goods by the ID of the purchased item
+    const goodsData = await goods.findById(purchaseData.id);
+    if (!goodsData) {
+      return res.status(404).json({ message: "Goods not found" });
+    }
+
+    // Decrease the goods stock by the purchased quantity
+    goodsData.qty = Number(goodsData.qty) - Number(purchaseData.qty);
+    await goodsData.save(); // Save the updated goods quantity
 
     res.status(200).json({ message: "Purchase deleted successfully" });
   } catch (error) {

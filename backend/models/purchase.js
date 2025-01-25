@@ -13,11 +13,11 @@ const purchaseSchema = new mongoose.Schema({
   },
   unitPrice: {
     type: Number,
-    required: true,
+    required: false,
   },
   sellingPrice: {
     type: Number,
-    required: true,
+    required: false,
   },
   storeLocationId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -37,12 +37,12 @@ const purchaseSchema = new mongoose.Schema({
   },
   goodsStatusId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "status", // Reference to status model
+    ref: "status",
     required: true,
   },
   typeId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "type", // Reference to type model
+    ref: "type",
     required: true,
   },
 });

@@ -4,12 +4,7 @@ const mongoose = require("mongoose");
 const reasonSchema = new mongoose.Schema({
   name: {
     type: String,
-    trim: true,
-    required: false, // Not required
-  },
-  reason: {
-    type: String,
-    trim: true,
+
     required: false, // Not required
   },
 });

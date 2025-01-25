@@ -1,9 +1,11 @@
 :root {
-  --primary-color: "green";
+  --primary-color: rgb(255, 128, 0);
   --secondary-color: "yellow";
   --black: "black";
 }
-
+.bg-green {
+  background: var(--primary-color);
+}
 .light {
   background-color: white;
   color: black;
@@ -22,6 +24,14 @@
   align-items: center;
   width: 50px;
   height: 50px;
+}
+.borderless {
+  border: none;
+  outline: none;
+}
+.small-input {
+  width: 50px;
+  text-align: center;
 }
 .company-logo img {
   width: 48px;
@@ -78,9 +88,9 @@
 }
 .goods-img-container {
   display: flex;
-  height: 180px;
+  height: 100px;
   /* height: 150px; */
-  flex-basis: 180px;
+  flex-basis: 100px;
 
   overflow: hidden;
   display: flex;
@@ -89,7 +99,7 @@
   padding: 5px;
 }
 .goods-img-container img {
-  width: 170px;
+  width: 100px;
   object-fit: contain;
   padding: 5px;
   /* aspect-ratio: 16/9; */
@@ -124,7 +134,7 @@
   .form-containers {
     width: 100%;
   }
-  .goods-img-container {
+  /* .goods-img-container {
     display: flex;
     flex-basis: 400px;
     flex-grow: 1;
@@ -135,5 +145,5 @@
     flex-basis: 400px;
     flex-grow: 1;
     height: auto;
-  }
+  } */
 }

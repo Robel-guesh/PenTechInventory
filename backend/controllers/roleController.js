@@ -10,7 +10,7 @@ exports.createRole = async (req, res) => {
     await roleData.save();
     res
       .status(201)
-      .json({ message: "Role created successfully", role: roleData });
+      .json({ message: "Role created successfully", data: roleData });
   } catch (error) {
     res.status(500).json({ error: "Server error while creating role" });
   }
@@ -20,7 +20,7 @@ exports.createRole = async (req, res) => {
 exports.getAllRoles = async (req, res) => {
   try {
     const roles = await role.find();
-    res.status(200).json(roles);
+    res.status(200).json({ data: roles });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving roles" });
   }
@@ -35,7 +35,7 @@ exports.getRoleById = async (req, res) => {
       return res.status(404).json({ message: "Role not found" });
     }
 
-    res.status(200).json(roleData);
+    res.status(200).json({ data: roleData });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving the role" });
   }
@@ -56,7 +56,7 @@ exports.updateRole = async (req, res) => {
 
     res
       .status(200)
-      .json({ message: "Role updated successfully", role: roleData });
+      .json({ message: "Role updated successfully", data: roleData });
   } catch (error) {
     res.status(500).json({ error: "Error updating role" });
   }

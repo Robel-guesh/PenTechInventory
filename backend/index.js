@@ -32,6 +32,7 @@ app.use("/store", storeRoute);
 app.use("/supplier", supplierRoute);
 app.use("/type", typeRoute);
 app.use("/user", userRoute);
+
 app.use("/withdraw", withdrawRoute);
 app.use("/category", categoryRoute);
 // app.use(express.urlencoded({ extended: true }));/

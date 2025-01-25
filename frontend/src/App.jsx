@@ -17,6 +17,7 @@ import TypeForm from "./componets/forms/TypeForm";
 import UserForm from "./componets/forms/UserForm";
 import WithdrawForm from "./componets/forms/WithdrawForm";
 import RoleForm from "./componets/forms/RoleForm";
+import AdminDashboard from "./componets/admin/AdminDashboard";
 function App() {
   const { defaultBackground } = useAppContext();
   return (
@@ -40,6 +41,7 @@ function App() {
             <Route path="/user" element={<UserForm />}></Route>
             <Route path="/withdraw" element={<WithdrawForm />}></Route>
             <Route path="/role" element={<RoleForm />}></Route>
+            <Route path="/adminDashboard" element={<AdminDashboard />}></Route>
           </Routes>
         </div>
       </>

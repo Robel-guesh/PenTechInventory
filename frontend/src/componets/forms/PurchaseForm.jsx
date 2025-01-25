@@ -10,9 +10,10 @@ const PurchaseForm = () => {
   const supplierRoute = "/supplier";
   const statusRoute = "/status";
   const typeRoute = "/type";
+  const goodsRoute = "/goods"; // New route to fetch goods
 
   const [purchase, setPurchase] = useState({
-    id: "",
+    id: "", // This is the goods ID now
     qty: 0,
     unitPrice: 0,
     sellingPrice: 0,
@@ -28,6 +29,7 @@ const PurchaseForm = () => {
   const [suppliers, setSuppliers] = useState([]);
   const [statuses, setStatuses] = useState([]);
   const [types, setTypes] = useState([]);
+  const [goods, setGoods] = useState([]);
 
   useEffect(() => {
     axios.get(`${backendUrl}${storeRoute}`).then((response) => {
@@ -45,7 +47,11 @@ const PurchaseForm = () => {
     axios.get(`${backendUrl}${typeRoute}`).then((response) => {
       setTypes(response.data.data);
     });
-  }, [backendUrl]);
+    axios.get(`${backendUrl}${goodsRoute}`).then((response) => {
+      // Fetch goods data
+      setGoods(response.data.data);
+    });
+  }, [backendUrl, stores, suppliers, goods, types, statuses, users]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -76,15 +82,22 @@ const PurchaseForm = () => {
         >
           <div className="form-containers">
             <div className="form-group mb-1">
-              <label className="my-2">{translate("Purchase ID")}</label>
-              <input
-                type="text"
-                name="id"
+              <label className="my-2">{translate("Goods ID")}</label>
+              <select
+                name="id" // Use the goods id as the name
                 className="form-control"
                 value={purchase.id}
                 onChange={handleChange}
                 required
-              />
+              >
+                <option>{translate("Select Goods")}</option>
+                {goods &&
+                  goods.map((good) => (
+                    <option key={good._id} value={good._id}>
+                      {good.name}
+                    </option>
+                  ))}
+              </select>
             </div>
 
             <div className="form-group mb-1">
@@ -98,7 +111,6 @@ const PurchaseForm = () => {
                 required
               />
             </div>
-
             <div className="form-group mb-1">
               <label className="my-2">{translate("Unit Price")}</label>
               <input
@@ -109,7 +121,6 @@ const PurchaseForm = () => {
                 onChange={handleChange}
               />
             </div>
-
             <div className="form-group mb-1">
               <label className="my-2">{translate("Selling Price")}</label>
               <input

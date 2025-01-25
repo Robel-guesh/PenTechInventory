@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
   },
   id: {
     type: String,
-    unique: true,
+    // unique: true,
   },
   email: {
     type: String,
@@ -40,6 +40,7 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "role", // Reference to the 'role' model
     required: true,
+    default: "user",
   },
 });
 

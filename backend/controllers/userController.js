@@ -3,6 +3,7 @@ const user = require("../models/user");
 // Create a new user
 exports.createUser = async (req, res) => {
   const photo = req.files ? req.files.map((file) => file.path) : [];
+  // console.log(req.body);
   try {
     const userData = new user({
       isAdmin: req.body.isAdmin,
@@ -21,7 +22,7 @@ exports.createUser = async (req, res) => {
       .status(201)
       .json({ message: "User created successfully", data: userData });
   } catch (error) {
-    res.status(500).json({ error: "Server error while creating user" });
+    res.status(500).json({ error: "Server error while creating user", error });
   }
 };
 
@@ -35,6 +36,14 @@ exports.getAllUsers = async (req, res) => {
     res.status(200).json({ data: users });
   } catch (error) {
     res.status(500).json({ error: "Error retrieving users" });
+  }
+};
+exports.getTotalUsers = async (req, res) => {
+  try {
+    const userCount = await user.countDocuments(); // Returns the count of users
+    res.status(200).json({ data: userCount + 1 });
+  } catch (error) {
+    res.status(500).json({ error: "Error retrieving total users" });
   }
 };
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { createContext, useContext, useState, useEffect } from "react";
-
+// require("dotenv").config();
 // Create a context for backend URL, language, admin status, and translations
 const AppContext = createContext();
 
@@ -22,6 +22,7 @@ export const AppProvider = ({ children }) => {
     book: "book",
     medical: "med",
   };
+
   const translationData = {
     "ADD TO CART": { eng: "add to cart", tig: "nab zembil aetu" },
     ORDER: { eng: "order", tig: "azz" },

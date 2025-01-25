@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const withdrawSchema = new mongoose.Schema({
   customerName: {
     type: String,
-    trim: true,
+    // trim: true,
   },
   customerId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -28,9 +28,17 @@ const withdrawSchema = new mongoose.Schema({
     ref: "reason",
     required: true,
   },
-  status: {
-    type: String,
-    default: "pending",
+  isPending: {
+    type: Boolean,
+    default: false, // Indicates if the withdrawal is pending
+  },
+  isApproved: {
+    type: Boolean,
+    default: false, // Indicates if the withdrawal has been approved
+  },
+  isConfirmed: {
+    type: Boolean,
+    default: false, // Indicates if the withdrawal has been confirmed
   },
   date: {
     type: Date,

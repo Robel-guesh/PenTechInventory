@@ -3,10 +3,11 @@ import axios from "axios";
 import { useAppContext } from "../../contexts/AppContext";
 
 const UserForm = () => {
-  const { backendUrl, translate } = useAppContext();
+  const { backendUrl, translate, isAdmin } = useAppContext();
   const userRoute = "/user";
+  const totalUsersRoute = "/user/api/totalUsers";
   const roleRoute = "/role";
-
+  const [totalUsers, setTotalUsers] = useState(0);
   const [user, setUser] = useState({
     name: "",
     sex: "",
@@ -25,8 +26,12 @@ const UserForm = () => {
     axios.get(`${backendUrl}${roleRoute}`).then((response) => {
       setRoles(response.data.data);
     });
+    axios.get(`${backendUrl}${totalUsersRoute}`).then((response) => {
+      setTotalUsers(response.data.data);
+      setUser({ ...user, id: `PTSC/${response.data.data}` });
+    });
   }, [backendUrl]);
-
+  console.log(totalUsers);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
@@ -36,7 +41,12 @@ const UserForm = () => {
     const files = Array.from(e.target.files);
     setUser({ ...user, photo: files });
   };
-
+  const generateUserId = () => {
+    const userId = `PTSC/${totalUsers}`;
+    setUser({ ...user, id: `PTSC/${totalUsers}` });
+    console.log(userId);
+  };
+  // generateUserId();
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -53,15 +63,22 @@ const UserForm = () => {
       user.photo.forEach((file) => {
         formData.append("photo", file);
       });
+      const headers = {
+        "Content-Type": "application/json", // Default to JSON
+      };
+
+      // Dynamically set Content-Type based on image upload
+      if (user.photo.length > 0) {
+        headers["Content-Type"] = "multipart/form-data";
+      }
 
       const response = await axios.post(`${backendUrl}${userRoute}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers,
       });
       alert(response.data?.message);
     } catch (error) {
       alert(error.response?.data?.message || error.message);
+      console.log(error);
     }
   };
 
@@ -86,31 +103,34 @@ const UserForm = () => {
               />
             </div>
 
-            <div className="form-group mb-1">
-              <label className="my-2">{translate("Sex")}</label>
-              <select
-                name="sex"
-                className="form-control"
-                value={user.sex}
-                onChange={handleChange}
-                required
-              >
-                <option>{translate("Select Sex")}</option>
-                <option value="Male">{translate("Male")}</option>
-                <option value="Female">{translate("Female")}</option>
-              </select>
-            </div>
-
-            <div className="form-group mb-1">
-              <label className="my-2">{translate("ID")}</label>
-              <input
-                type="text"
-                name="id"
-                className="form-control"
-                value={user.id}
-                onChange={handleChange}
-                required
-              />
+            <div className="form-group">
+              <label>{translate("Sex")}</label>
+              <div className="d-flex w-100 gap-2">
+                <label>
+                  <input
+                    className="me-2"
+                    type="radio"
+                    name="sex"
+                    value="Male"
+                    checked={user.sex === "Male"}
+                    onChange={handleChange}
+                    required
+                  />
+                  {translate("Male")}
+                </label>
+                <label>
+                  <input
+                    className="me-2"
+                    type="radio"
+                    name="sex"
+                    value="Female"
+                    checked={user.sex === "Female"}
+                    onChange={handleChange}
+                    required
+                  />
+                  {translate("Female")}
+                </label>
+              </div>
             </div>
 
             <div className="form-group mb-1">
@@ -155,7 +175,7 @@ const UserForm = () => {
                 className="form-control"
                 value={user.roleId}
                 onChange={handleChange}
-                required
+                // required
               >
                 <option>{translate("Select Role")}</option>
                 {roles &&
@@ -168,29 +188,52 @@ const UserForm = () => {
             </div>
 
             <div className="form-group mb-1">
-              <label className="my-2">{translate("Is Admin")}</label>
-              <input
-                type="checkbox"
-                name="isAdmin"
-                checked={user.isAdmin}
-                onChange={(e) =>
-                  setUser({ ...user, isAdmin: e.target.checked })
-                }
-              />
+              <label className="my-2">{translate("ID")}</label>
+              <div className="d-flex align-items-center justify-content-between">
+                <input
+                  type="text"
+                  name="id"
+                  className="form-control me-2 w-75"
+                  value={user.id}
+                  onChange={handleChange}
+                  required
+                />
+                <span
+                  className="w-25 btn btn-secondary fw-bolder"
+                  onClick={() => generateUserId()}
+                >
+                  fill id
+                </span>
+              </div>
             </div>
 
-            <div className="form-group mb-1">
-              <label className="my-2">{translate("Is Verified")}</label>
-              <input
-                type="checkbox"
-                name="isVerified"
-                checked={user.isVerified}
-                onChange={(e) =>
-                  setUser({ ...user, isVerified: e.target.checked })
-                }
-              />
-            </div>
+            {isAdmin && (
+              <div className="d-flex gap-2 w-100 justify-content-evenly">
+                <div className="form-group mb-1">
+                  <label className="m-2">{translate("Is Admin")}</label>
+                  <input
+                    type="checkbox"
+                    name="isAdmin"
+                    checked={user.isAdmin}
+                    onChange={(e) =>
+                      setUser({ ...user, isAdmin: e.target.checked })
+                    }
+                  />
+                </div>
 
+                <div className="form-group mb-1">
+                  <label className="m-2">{translate("Is Verified")}</label>
+                  <input
+                    type="checkbox"
+                    name="isVerified"
+                    checked={user.isVerified}
+                    onChange={(e) =>
+                      setUser({ ...user, isVerified: e.target.checked })
+                    }
+                  />
+                </div>
+              </div>
+            )}
             <button type="submit" className="btn btn-primary my-2 w-100">
               {translate("Create User")}
             </button>

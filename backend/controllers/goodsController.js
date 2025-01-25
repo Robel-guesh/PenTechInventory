@@ -1,9 +1,10 @@
 const goods = require("../models/goods");
+const purchase = require("../models/purchase");
 
 // Create a new good
 exports.createGood = async (req, res) => {
   const photo = req.files ? req.files.map((file) => file.path) : [];
-  console.log(req.body);
+
   const {
     id,
     name,
@@ -125,6 +126,12 @@ exports.deleteGood = async (req, res) => {
 
     if (!goodData) {
       return res.status(404).json({ message: "Good not found" });
+    }
+    const purchasedGoodData = await purchase.findOneAndDelete({
+      id: req.params.id,
+    });
+    if (!purchasedGoodData) {
+      return res.status(404).json({ message: "Good not found on purchases" });
     }
 
     res.status(200).json({ message: "Good deleted successfully" });

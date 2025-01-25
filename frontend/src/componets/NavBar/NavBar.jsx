@@ -15,7 +15,7 @@ function NavBar() {
   return (
     <div
       className={`d-flex justify-content-between align-items-center ${
-        darkMode ? defaultBackground : "bg-success"
+        darkMode ? defaultBackground : "bg-green"
       } `}
     >
       <div className="company-logo">

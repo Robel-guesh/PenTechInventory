@@ -1,20 +1,27 @@
+// routes/withdrawRoutes.js
 const express = require("express");
 const router = express.Router();
 const withdrawController = require("../controllers/withdrawController");
 
-// Route for creating a withdraw
-router.post("/", withdrawController.createWithdraw);
+// Create a new withdraw
+router.post("/create", withdrawController.createWithdraw);
 
-// Route for getting all withdraws
+// Approve a withdraw
+router.put("/approve/:id", withdrawController.approveWithdraw);
+
+// Confirm a withdraw (subtract quantity from inventory)
+router.put("/confirm/:id", withdrawController.confirmWithdraw);
+
+// Return goods
+router.post("/return", withdrawController.returnGoods);
+
+// Get all withdraws
 router.get("/", withdrawController.getAllWithdraws);
 
-// Route for getting a single withdraw by ID
+// Get a single withdraw by ID
 router.get("/:id", withdrawController.getWithdrawById);
 
-// Route for updating a withdraw by ID
-router.put("/:id", withdrawController.updateWithdraw);
-
-// Route for deleting a withdraw by ID
+// Delete a withdraw by ID
 router.delete("/:id", withdrawController.deleteWithdraw);
 
 module.exports = router;

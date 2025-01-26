@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAppContext } from "../../contexts/AppContext";
 
-const GoodForm = () => {
+const GoodForm = ({ oldData, onSave }) => {
   const { backendUrl, translate } = useAppContext();
   const goodsRoute = "/goods";
   const categoryRoute = "/category";
@@ -13,15 +13,14 @@ const GoodForm = () => {
     name: "",
     catagoryId: "",
     unitOfMeasureId: "",
-    // qty: 0,
+    qty: 0,
     description: "",
     shortageLevel: 0,
   });
 
   const [categories, setCategories] = useState([]);
   const [measurements, setMeasurements] = useState([]);
-
-  const [images, setImages] = useState([]); // This stores the selected images
+  const [images, setImages] = useState([]); // For storing the selected images
   const [imagePreviews, setImagePreviews] = useState([]); // For image previews
 
   useEffect(() => {
@@ -32,7 +31,25 @@ const GoodForm = () => {
     axios.get(`${backendUrl}${measurementRoute}`).then((response) => {
       setMeasurements(response.data.data);
     });
-  }, [backendUrl]);
+
+    // If `oldData` is provided, populate the form with existing good data
+    if (oldData) {
+      setGood({
+        id: oldData.id || "",
+        name: oldData.name || "",
+        catagoryId: oldData.catagoryId || "",
+        unitOfMeasureId: oldData.unitOfMeasureId || "",
+        qty: oldData.qty || 0,
+        description: oldData.description || "",
+        shortageLevel: oldData.shortageLevel || 0,
+      });
+
+      // Set image previews if there are existing images
+      if (oldData.photos && oldData.photos.length > 0) {
+        setImagePreviews(oldData.photos);
+      }
+    }
+  }, [backendUrl, oldData]);
 
   const handleImageChange = (e) => {
     const files = e.target.files;
@@ -46,7 +63,6 @@ const GoodForm = () => {
     setImagePreviews((prevPreviews) => [...prevPreviews, ...previews]);
   };
 
-  // Handle the removal of selected images
   const handleImageDelete = (index) => {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
     setImagePreviews((prevPreviews) =>
@@ -64,11 +80,11 @@ const GoodForm = () => {
     formData.append("name", good.name);
     formData.append("catagoryId", good.catagoryId);
     formData.append("unitOfMeasureId", good.unitOfMeasureId);
-    // formData.append("qty", good.qty);
+    formData.append("qty", good.qty);
     formData.append("description", good.description);
     formData.append("shortageLevel", good.shortageLevel);
 
-    // Append images to form data
+    // Append images to form data (if any)
     images.forEach((image) => {
       formData.append("photo", image);
     });
@@ -83,14 +99,28 @@ const GoodForm = () => {
     }
 
     try {
-      const response = await axios.post(
-        `${backendUrl}${goodsRoute}`,
-        formData,
-        {
+      let response;
+      if (oldData) {
+        // Update existing good
+        response = await axios.put(
+          `${backendUrl}${goodsRoute}/${oldData._id}`,
+          formData,
+          {
+            headers,
+          }
+        );
+      } else {
+        // Create new good
+        response = await axios.post(`${backendUrl}${goodsRoute}`, formData, {
           headers,
-        }
-      );
+        });
+      }
+
       alert(response.data?.message);
+
+      if (onSave && typeof onSave === "function") {
+        onSave(); // Refresh the data in AdminDashboard (or other parent component)
+      }
     } catch (error) {
       alert(error.response?.data?.message || error.message);
     }
@@ -104,7 +134,9 @@ const GoodForm = () => {
   return (
     <div className="d-flex justify-content-center align-items-center w-100">
       <div>
-        <h2 className="text-center">{translate("Create Good")}</h2>
+        <h2 className="text-center">
+          {oldData ? translate("Edit Good") : translate("Create Good")}
+        </h2>
         <form
           className="d-flex flex-wrap p-2 gap-3 justify-content-center"
           onSubmit={handleSubmit}
@@ -126,7 +158,7 @@ const GoodForm = () => {
               <label className="my-2">{translate("Category")}</label>
               <select
                 name="catagoryId"
-                className="form-control "
+                className="form-control"
                 value={good.catagoryId}
                 onChange={handleChange}
               >
@@ -149,6 +181,7 @@ const GoodForm = () => {
                 value={good.id}
                 onChange={handleChange}
                 required
+                disabled={!!oldData} // Disable if editing (we don't want to change the ID)
               />
             </div>
 
@@ -172,18 +205,6 @@ const GoodForm = () => {
           </div>
 
           <div className="form-containers">
-            {/* <div className="form-group mb-1">
-              <label className="my-2">{translate("Quantity")}</label>
-              <input
-                type="number"
-                name="qty"
-                className="form-control"
-                value={good.qty}
-                onChange={handleChange}
-                required
-              />
-            </div> */}
-
             <div className="form-group mb-1">
               <label className="my-2">{translate("Upload Photos")}</label>
               <input
@@ -202,7 +223,11 @@ const GoodForm = () => {
                   className="image-preview-container position-relative m-2"
                 >
                   <img
-                    src={preview}
+                    src={
+                      oldData
+                        ? `${backendUrl}/${oldData.photo[0]}`
+                        : `${preview}`
+                    }
                     alt={`Preview ${index + 1}`}
                     className="image-preview"
                     style={{
@@ -245,7 +270,7 @@ const GoodForm = () => {
             </div>
 
             <button type="submit" className="btn btn-primary my-2 w-100">
-              {translate("Create Good")}
+              {oldData ? translate("Update Good") : translate("Create Good")}
             </button>
           </div>
         </form>

@@ -31,7 +31,10 @@ function NavBar() {
           </div>
           <div className=" mx-3 ">{userName}</div>
         </div>
-        <div onClick={() => toggleLanguage()}>
+        <div
+          className={darkMode ? "text-warning" : "text-black"}
+          onClick={() => toggleLanguage()}
+        >
           {language === "eng" ? "En" : "ትግ"}
         </div>
         <div onClick={() => toggleDarkMode()}>
@@ -39,7 +42,7 @@ function NavBar() {
             className={
               darkMode
                 ? "text-warning bi bi-sun-fill mx-4  "
-                : "text-white bi bi-sun-fill mx-4"
+                : "text-black bi bi-sun-fill mx-4"
             }
           ></span>
         </div>

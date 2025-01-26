@@ -68,6 +68,7 @@ exports.getUserById = async (req, res) => {
 // Update a user by ID
 exports.updateUser = async (req, res) => {
   const photo = req.files ? req.files.map((file) => file.path) : [];
+  // console.log(req.body);
   try {
     const userData = await user.findByIdAndUpdate(
       req.params.id,

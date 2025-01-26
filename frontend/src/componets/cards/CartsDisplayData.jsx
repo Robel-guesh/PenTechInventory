@@ -29,11 +29,11 @@ function CartsDisplayData({ cardData }) {
     try {
       const withdrawData = {
         customerName: "Robel", //user.name, // Using logged-in user info
-        customerId: "6787e03ac1699195308fe204", //user._id,
+        customerId: "6794cbecb1099a4b6e93c5c2", //user._id,
         goodsId: cardData?._id,
-        sellerId: "6787e03ac1699195308fe204", //user._id, // Assuming the seller is the current user
+        sellerId: "6794cbecb1099a4b6e93c5c2", //user._id, // Assuming the seller is the current user
         qty: cartCount,
-        reasonId: "6787cfa02cdcc6af278d54cb", // cardData.reasonId
+        reasonId: "6794cab4b1099a4b6e93c5a2", // cardData.reasonId
         status: status,
         date: new Date(),
       };

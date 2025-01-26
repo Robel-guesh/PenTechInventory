@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal, Button, Table, Form, Pagination } from "react-bootstrap";
 import { useAppContext } from "../../contexts/AppContext";
+import { NavLink, useNavigate } from "react-router-dom";
 import { paths } from "../paths";
 import {
   withdrawHeader,
@@ -15,6 +16,18 @@ import {
   // purchaseHeader,
   measurementHeader,
 } from "../Headers";
+import GoodForm from "../forms/GoodForm";
+import CategoryForm from "../forms/CategoryForm";
+import MeasurementForm from "../forms/MeasurementForm";
+import ReasonForm from "../forms/ReasonForm";
+import RoleForm from "../forms/RoleForm";
+import TypeForm from "../forms/TypeForm";
+import StatusForm from "../forms/StatusForm";
+import StoreForm from "../forms/StoreForm";
+import UserForm from "../forms/UserForm";
+import SupplierForm from "../forms/SupplierForm";
+import PurchaseForm from "../forms/PurchaseForm";
+import WithdrawForm from "../forms/WithdrawForm";
 function AdminDashboard() {
   const { backendUrl, translate } = useAppContext();
   const sideBarPaths = paths;
@@ -29,14 +42,91 @@ function AdminDashboard() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalMode, setModalMode] = useState(""); // 'view' or 'edit'
   const [tableHeader, setTableHeader] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
 
+  const navigate = useNavigate();
+  const formList = {
+    category: (
+      <CategoryForm
+        oldData={selectedItem}
+        onSave={() => fetchDataByRoute("category")}
+      />
+    ),
+    measurement: (
+      <MeasurementForm
+        oldData={selectedItem}
+        onSave={() => fetchDataByRoute("measurement")}
+      />
+    ),
+    reason: (
+      <ReasonForm
+        oldData={selectedItem}
+        onSave={() => fetchDataByRoute("reason")}
+      />
+    ),
+    role: (
+      <RoleForm
+        oldData={selectedItem}
+        onSave={() => fetchDataByRoute("role")}
+      />
+    ),
+    type: (
+      <TypeForm
+        oldData={selectedItem}
+        onSave={() => fetchDataByRoute("type")}
+      ></TypeForm>
+    ),
+    status: (
+      <StatusForm
+        oldData={selectedItem}
+        onSave={() => fetchDataByRoute("status")}
+      />
+    ),
+    store: (
+      <StoreForm
+        oldData={selectedItem}
+        onSave={() => fetchDataByRoute("store")}
+      />
+    ),
+    supplier: (
+      <SupplierForm
+        oldData={selectedItem}
+        onSave={() => fetchDataByRoute("supplier")}
+      />
+    ),
+    purchase: (
+      <PurchaseForm
+        oldData={selectedItem}
+        onSave={() => fetchDataByRoute("purchase")}
+      />
+    ),
+
+    goods: (
+      <GoodForm
+        oldData={selectedItem}
+        onSave={() => fetchDataByRoute("goods")}
+      />
+    ),
+    user: (
+      <UserForm
+        oldData={selectedItem}
+        onSave={() => fetchDataByRoute("user")}
+      />
+    ),
+    withdraw: (
+      <WithdrawForm
+        oldData={selectedItem}
+        onSave={() => fetchDataByRoute("withdraw")}
+      />
+    ),
+  };
   // Fetch data based on sidebar selection
   const fetchDataByRoute = async (exactPath) => {
     const response = await axios.get(`${backendUrl}/${exactPath}`);
-    // console.log("selected path", exactPath);
-    // console.log("selected header", selectedHeader);
-    // console.log(userHeader);
-
+    // console.log("selected path", exactPath, response.data);
+    setSidebarSelection(exactPath);
+    setData(response?.data?.data);
+    // console.log("withdrawData", data);
     if (exactPath === "user") {
       setTableHeader(userHeader);
     }
@@ -68,38 +158,13 @@ function AdminDashboard() {
     ) {
       setTableHeader(categoryHeader);
     }
-    setSidebarSelection(exactPath);
-    setData(response?.data?.data);
   };
   const fetchData = async () => {
     try {
       let response;
       response = await axios.get(`${backendUrl}/goods`);
       setTableHeader(goodsHeader);
-      // setTableHeader(withdrawHeader);
-
-      // switch (sidebarSelection) {
-      // case "category":
-      //   response = await axios.get(`${backendUrl}/category`);
-      //   setTableHeader(categoryHeader);
-      // case "goods":
-      // break;
-      // case "users":
-      //   response = await axios.get(`${backendUrl}/user`);
-      //   setTableHeader(userHeader);
-
-      //   break;
-      // case "withdraw":
-      //   response = await axios.get(`${backendUrl}/withdraw`);
-      //   setTableHeader(withdrawHeader);
-      //   break;
-
-      // Add other cases for different sections (categories, suppliers, etc.)
-      // default:
-      //   break;
-      // }
       setData(response?.data?.data); // Assuming the response structure is { data: [...] }
-      console.log("initial data", response?.data?.data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -120,17 +185,28 @@ function AdminDashboard() {
   // Handle search
   const handleSearch = () => {
     if (!data) return;
-    console.log("other data", data);
+
     // Filter only items that have a name property and handle cases where `name` is undefined
     let filtered = data.filter((item) => {
-      return item?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+      return (
+        item?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item?.goodsId?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item?.id?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item?.storeLocationId?.name
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      );
+    });
+    let withdrawFilter = filtered.filter((item) => {
+      item?.filterStatus === true;
     });
 
-    // if (filterStatus) {
-    //   filtered = filtered.filter((item) => item.status === filterStatus);
-    // }
-
-    setFilteredData(filtered);
+    setFilteredData(
+      // filterStatus.length > 0 && sidebarSelection === "withdraw"
+      //   ? withdrawFilter
+      //   :
+      filtered
+    );
   };
 
   // Handle page change
@@ -147,11 +223,15 @@ function AdminDashboard() {
     setShowModal(true);
   };
 
-  const handleEditSave = async (itemId) => {
+  const handleEditSave = async (itemId, updatedData) => {
+    console.log(itemId);
     // Logic for saving the edited item
     try {
       if (window.confirm("are you sure you want to update this file?")) {
-        await axios.put(`${backendUrl}/${sidebarSelection}/${itemId}`);
+        await axios.put(
+          `${backendUrl}/${sidebarSelection}/${itemId}`,
+          updatedData
+        );
       }
       // fetchData(); // Refresh data
       fetchDataByRoute(sidebarSelection);
@@ -161,7 +241,43 @@ function AdminDashboard() {
 
     // setShowModal(false);
   };
+  const handleVerification = async (verification, itemId) => {
+    try {
+      await axios.put(`${backendUrl}/${sidebarSelection}/${itemId}`, {
+        isVerified: verification,
+      });
+      fetchDataByRoute(sidebarSelection);
+    } catch (error) {
+      console.error("Error updating item:", error.message);
+    }
+  };
+  const handleWithdrawApproval = async (itemId) => {
+    try {
+      await axios.put(`${backendUrl}/${sidebarSelection}/approve/${itemId}`);
+      fetchDataByRoute(sidebarSelection);
+    } catch (error) {
+      console.error("Error updating item:", error.message);
+    }
+  };
+  const handleWithdrawConfirmation = async (itemId) => {
+    try {
+      await axios.put(`${backendUrl}/${sidebarSelection}/confirm/${itemId}`);
+      fetchDataByRoute(sidebarSelection);
+    } catch (error) {
+      console.error("Error updating item:", error.message);
+    }
+  };
 
+  const handleAdminUpdate = async (isAdmin, itemId) => {
+    try {
+      await axios.put(`${backendUrl}/${sidebarSelection}/${itemId}`, {
+        isAdmin: isAdmin,
+      });
+      fetchDataByRoute(sidebarSelection);
+    } catch (error) {
+      console.error("Error updating item:", error.message);
+    }
+  };
   const handleDelete = async (itemId) => {
     // Handle Delete operation
 
@@ -174,7 +290,10 @@ function AdminDashboard() {
       console.error("Error deleting item:", error.message);
     }
   };
-
+  // const goToPage = () => {
+  //   console.log(sidebarSelection);
+  //   navigate(`/${sidebarSelection}`);
+  // };
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -190,9 +309,14 @@ function AdminDashboard() {
                 sideBarPaths.map((sidePath, index) => (
                   <li
                     key={index}
-                    className=" ps-2 my-1 p-1 py-1 pointer "
-                    onClick={() => fetchDataByRoute(sidePath.routePath)}
-                    style={{ backgroundColor: "rgba(0,0,0,0.1)" }}
+                    className={` ps-2 my-1 p-1 py-1 pointer  ${
+                      currentIndex === index ? "bg-warning" : "bg-white"
+                    }`}
+                    onClick={() => (
+                      fetchDataByRoute(sidePath.routePath),
+                      setCurrentIndex(index)
+                    )}
+                    // style={{ backgroundColor: "rgba(0,0,0,0.1)" }}
                   >
                     {sidePath.label}
                   </li>
@@ -219,6 +343,7 @@ function AdminDashboard() {
                   style={{ width: "300px" }}
                 />
               </div>
+
               <div className="col-md-5">
                 {sidebarSelection === "withdraw" && (
                   <Form.Group className="d-flex gap-2">
@@ -250,7 +375,15 @@ function AdminDashboard() {
                 )}
               </div>
             </div>
-            <div className="overflow-scroll">
+            <div className=" m-2 d-flex align-items-center justify-content-end  ">
+              <NavLink
+                // onClick={goToPage}
+                to={`/${sidebarSelection}`}
+                className="bi bi-plus bg-primary circle-button"
+                style={{ width: "50px", height: "50px" }}
+              ></NavLink>
+            </div>
+            <div className="overflowX-scroll">
               <Table striped bordered hover>
                 <thead>
                   <tr>
@@ -258,10 +391,23 @@ function AdminDashboard() {
                       tableHeader.map((headers, index) => (
                         <th key={index}>{headers.label}</th>
                       ))}
-                    <th>{translate("Actions")}</th>
-                    {sidebarSelection === "users" && (
+                    {sidebarSelection === "user" && (
+                      <th>{translate("Admin")}</th>
+                    )}
+                    {sidebarSelection === "user" && (
                       <th>{translate("Verified")}</th>
                     )}
+                    {sidebarSelection === "withdraw" && (
+                      <th>{translate("Pendding")}</th>
+                    )}
+                    {sidebarSelection === "withdraw" && (
+                      <th>{translate("Approved")}</th>
+                    )}
+                    {sidebarSelection === "withdraw" && (
+                      <th>{translate("Taken")}</th>
+                    )}
+
+                    <th>{translate("Actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -270,8 +416,105 @@ function AdminDashboard() {
                       <tr key={index}>
                         {tableHeader &&
                           tableHeader.map((headers, index) => (
-                            <td key={index}>{item[headers.path]}</td>
+                            // <td key={index}>
+                            //   {item[headers.path] || item[headers.path?.name]}
+                            // </td>
+                            <td key={index}>
+                              {/* Check if the property is a foreign key or nested */}
+                              {headers.path.includes(".")
+                                ? headers.path
+                                    .split(".")
+                                    .reduce(
+                                      (acc, part) => acc && acc[part],
+                                      item
+                                    )
+                                : item[headers.path]}
+                            </td>
                           ))}
+                        {sidebarSelection === "user" && (
+                          <td>
+                            <span>
+                              <span
+                                onClick={() =>
+                                  handleAdminUpdate(!item.isAdmin, item._id)
+                                }
+                                // variant="warning"
+                                className={`bi  fs-4 pointer p-2 me-2   ${
+                                  item.isAdmin
+                                    ? "text-primary bi-person-check"
+                                    : "text-danger bi-person-fill-x"
+                                }`}
+                              ></span>
+                            </span>
+                          </td>
+                        )}
+                        {sidebarSelection === "user" && (
+                          <td>
+                            <span>
+                              <span
+                                onClick={() =>
+                                  handleVerification(!item.isVerified, item._id)
+                                }
+                                // variant="warning"
+                                className={`bi  fs-4 pointer p-2 me-2   ${
+                                  item.isVerified
+                                    ? "text-success bi-person-check"
+                                    : "text-danger bi-person-fill-x"
+                                }`}
+                              ></span>
+                            </span>
+                          </td>
+                        )}
+                        {sidebarSelection === "withdraw" && (
+                          <td>
+                            <span>
+                              <span
+                                // variant="warning"
+                                className={`bi  fs-4 pointer p-2 me-2   ${
+                                  item.isPending
+                                    ? "text-success bi-check"
+                                    : "text-danger bi-x"
+                                }`}
+                              ></span>
+                            </span>
+                          </td>
+                        )}
+                        {sidebarSelection === "withdraw" && (
+                          <td>
+                            <span>
+                              <span
+                                // variant="warning"
+                                onClick={() =>
+                                  item.isApproved === false &&
+                                  handleWithdrawApproval(item._id)
+                                }
+                                className={`bi  fs-4 pointer p-2 me-2   ${
+                                  item.isApproved
+                                    ? "text-success bi-check"
+                                    : "text-danger bi-x"
+                                }`}
+                              ></span>
+                            </span>
+                          </td>
+                        )}
+                        {sidebarSelection === "withdraw" && (
+                          <td>
+                            <span>
+                              <span
+                                // variant="warning"
+                                onClick={() =>
+                                  item.isConfirmed === false &&
+                                  handleWithdrawConfirmation(item._id)
+                                }
+                                className={`bi  fs-4 pointer p-2 me-2   ${
+                                  item.isConfirmed
+                                    ? "text-success bi-check"
+                                    : "text-danger bi-x"
+                                }`}
+                              ></span>
+                            </span>
+                          </td>
+                        )}
                         <td>
                           <span
                             className="bi bi-eye-fill pointer p-2"
@@ -288,20 +531,6 @@ function AdminDashboard() {
                             className="bi bi-trash-fill pointer p-2 text-danger"
                             onClick={() => handleDelete(item._id)}
                           ></span>
-                        </td>
-                        <td>
-                          {sidebarSelection === "users" && (
-                            <span>
-                              <span
-                                // variant="warning"
-                                className={`bi  fs-4 pointer p-2 me-2   ${
-                                  item.isVerified
-                                    ? "text-success bi-person-check"
-                                    : "text-danger bi-person-fill-x"
-                                }`}
-                              ></span>
-                            </span>
-                          )}
                         </td>
                       </tr>
                     ))}
@@ -345,27 +574,13 @@ function AdminDashboard() {
               {/* Add more details as necessary */}
             </div>
           ) : (
-            <Form>
-              <Form.Group controlId="formName">
-                <Form.Label>Name</Form.Label>
-                <Form.Control type="text" defaultValue={selectedItem?.name} />
-              </Form.Group>
-              {/* Add other fields for editing */}
-            </Form>
+            formList[sidebarSelection]
           )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleModalClose}>
             Close
           </Button>
-          {modalMode === "edit" && (
-            <Button
-              variant="primary"
-              onClick={() => handleEditSave(selectedItem?._id)}
-            >
-              Save Changes
-            </Button>
-          )}
         </Modal.Footer>
       </Modal>
     </div>

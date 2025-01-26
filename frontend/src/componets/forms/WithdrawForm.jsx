@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAppContext } from "../../contexts/AppContext";
 
-const WithdrawForm = () => {
+const WithdrawForm = ({ oldData = null }) => {
   const { backendUrl, translate } = useAppContext();
   const withdrawRoute = "/withdraw";
   const userRoute = "/user";
@@ -22,6 +22,7 @@ const WithdrawForm = () => {
   const [users, setUsers] = useState([]);
   const [goods, setGoods] = useState([]);
   const [reasons, setReasons] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Fetch data for users, goods, and reasons
@@ -34,7 +35,14 @@ const WithdrawForm = () => {
     axios.get(`${backendUrl}${reasonRoute}`).then((response) => {
       setReasons(response.data.data);
     });
-  }, [backendUrl]);
+
+    // If oldData exists (update case), pre-fill the form
+    if (oldData) {
+      setWithdraw(oldData);
+    }
+
+    setLoading(false);
+  }, [backendUrl, oldData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,20 +53,35 @@ const WithdrawForm = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        `${backendUrl}${withdrawRoute}`,
-        withdraw
-      );
-      alert(response.data?.message);
+      let response;
+
+      // If there's oldData, we're updating the withdrawal (PUT request)
+      if (oldData) {
+        response = await axios.put(
+          `${backendUrl}${withdrawRoute}/${withdraw._id}`,
+          withdraw
+        );
+      } else {
+        // Otherwise, we are creating a new withdrawal (POST request)
+        response = await axios.post(`${backendUrl}${withdrawRoute}`, withdraw);
+      }
+
+      alert(response.data?.message || translate("Operation successful"));
     } catch (error) {
       alert(error.response?.data?.message || error.message);
     }
   };
 
+  if (loading) {
+    return <div>{translate("Loading...")}</div>;
+  }
+
   return (
     <div className="d-flex justify-content-center align-items-center w-100">
       <div>
-        <h2 className="text-center">{translate("Create Withdrawal")}</h2>
+        <h2 className="text-center">
+          {translate(oldData ? "Update Withdrawal" : "Create Withdrawal")}
+        </h2>
         <form
           className="d-flex flex-wrap p-2 gap-3 justify-content-center"
           onSubmit={handleSubmit}
@@ -174,7 +197,7 @@ const WithdrawForm = () => {
             </div>
 
             <button type="submit" className="btn btn-primary my-2 w-100">
-              {translate("Create Withdrawal")}
+              {translate(oldData ? "Update Withdrawal" : "Create Withdrawal")}
             </button>
           </div>
         </form>

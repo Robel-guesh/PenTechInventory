@@ -56,11 +56,12 @@ exports.createWithdraw = async (req, res) => {
 exports.approveWithdraw = async (req, res) => {
   try {
     const { id } = req.params;
-    const { sellerId } = req.body;
+    // const { sellerId } = req.body;
 
     const withdrawData = await withdraw.findByIdAndUpdate(
       id,
-      { isApproved: true, sellerId }, // Update the state and add sellerId
+      { isApproved: true }, // Update the state and add sellerId
+      // { isApproved: true, sellerId }, // Update the state and add sellerId
       { new: true }
     );
 
@@ -159,7 +160,7 @@ exports.getAllWithdraws = async (req, res) => {
       .populate("customerId", "name email")
       .populate("goodsId", "name price")
       .populate("sellerId", "name email")
-      .populate("reasonId", "reason")
+      .populate("reasonId", "name")
       .exec();
     res.status(200).json({ data: withdraws });
   } catch (error) {

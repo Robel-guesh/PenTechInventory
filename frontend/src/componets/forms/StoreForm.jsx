@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAppContext } from "../../contexts/AppContext";
 
-const StoreForm = () => {
+const StoreForm = ({ oldData, onSave }) => {
   const { backendUrl, translate } = useAppContext();
   const storeRoute = "/store";
 
@@ -10,6 +10,16 @@ const StoreForm = () => {
     name: "",
     location: "",
   });
+
+  // Set initial values if oldData is passed (for editing)
+  useEffect(() => {
+    if (oldData) {
+      setStore({
+        name: oldData.name || "",
+        location: oldData.location || "",
+      });
+    }
+  }, [oldData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,8 +30,24 @@ const StoreForm = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`${backendUrl}${storeRoute}`, store);
+      let response;
+      if (oldData) {
+        // Update existing store
+        response = await axios.put(
+          `${backendUrl}${storeRoute}/${oldData._id}`,
+          store
+        );
+      } else {
+        // Create new store
+        response = await axios.post(`${backendUrl}${storeRoute}`, store);
+      }
+
       alert(response.data?.message);
+
+      // Call onSave function if provided (to refresh or update data)
+      if (onSave && typeof onSave === "function") {
+        onSave();
+      }
     } catch (error) {
       alert(error.response?.data?.message || error.message);
     }
@@ -30,7 +56,9 @@ const StoreForm = () => {
   return (
     <div className="d-flex justify-content-center align-items-center w-100">
       <div>
-        <h2 className="text-center">{translate("Create Store")}</h2>
+        <h2 className="text-center">
+          {oldData ? translate("Edit Store") : translate("Create Store")}
+        </h2>
         <form
           className="d-flex flex-wrap p-2 gap-3 justify-content-center"
           onSubmit={handleSubmit}
@@ -61,7 +89,7 @@ const StoreForm = () => {
             </div>
 
             <button type="submit" className="btn btn-primary my-2 w-100">
-              {translate("Create Store")}
+              {oldData ? translate("Update Store") : translate("Create Store")}
             </button>
           </div>
         </form>

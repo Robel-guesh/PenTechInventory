@@ -3,7 +3,7 @@ import axios from "axios";
 import { useAppContext } from "../../contexts/AppContext";
 
 const UserForm = ({ oldData, onSave }) => {
-  const { backendUrl, translate, isAdmin } = useAppContext();
+  const { backendUrl, translate, loggedUser } = useAppContext();
   const userRoute = "/user";
   const totalUsersRoute = "/user/api/totalUsers";
   const roleRoute = "/role";
@@ -26,6 +26,9 @@ const UserForm = ({ oldData, onSave }) => {
   useEffect(() => {
     axios.get(`${backendUrl}${roleRoute}`).then((response) => {
       setRoles(response.data.data);
+      if (!oldData) {
+        setUser({ ...user, roleId: response?.data?.data[0] });
+      }
     });
 
     // If oldData exists, set initial user data (editing case)
@@ -36,8 +39,8 @@ const UserForm = ({ oldData, onSave }) => {
         id: oldData.id,
         email: oldData.email,
         password: "", // In case the password shouldn't be pre-filled
-        photo: [], // Assuming we don't need to pre-load photos on update
-        roleId: oldData.roleId,
+        photo: oldData.photo, // Assuming we don't need to pre-load photos on update
+        roleId: oldData.roleId._id,
         isAdmin: oldData.isAdmin,
         isVerified: oldData.isVerified,
       });
@@ -52,7 +55,7 @@ const UserForm = ({ oldData, onSave }) => {
       });
     }
   }, [backendUrl, oldData]);
-
+  console.log(user);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
@@ -222,7 +225,8 @@ const UserForm = ({ oldData, onSave }) => {
                 value={user.roleId}
                 onChange={handleChange}
               >
-                <option>{translate("Select Role")}</option>
+                {/* <option>{translate("Select Role")}</option> */}
+                <option value={user?.roleId?._id}>{user?.roleId?.name}</option>
                 {roles.map((role) => (
                   <option key={role._id} value={role._id}>
                     {role.name}
@@ -247,13 +251,13 @@ const UserForm = ({ oldData, onSave }) => {
                   className="w-25 btn btn-secondary fw-bolder"
                   onClick={generateUserId}
                 >
-                  {translate("Generate ID")}
+                  {translate("ID")}
                 </span>
               </div>
             </div>
 
             {/* Admin & Verified */}
-            {isAdmin && (
+            {loggedUser.isAdmin && (
               <div className="d-flex gap-2 w-100 justify-content-evenly">
                 <div className="form-group mb-1">
                   <label className="m-2">{translate("Is Admin")}</label>

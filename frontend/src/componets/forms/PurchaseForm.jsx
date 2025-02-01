@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAppContext } from "../../contexts/AppContext";
 
-const PurchaseForm = ({ oldData = null }) => {
-  const { backendUrl, translate } = useAppContext();
+const PurchaseForm = ({ oldData = null, onSave }) => {
+  const { backendUrl, translate, loggedUser } = useAppContext();
   const purchaseRoute = "/purchase";
   const storeRoute = "/store";
   const userRoute = "/user";
   const supplierRoute = "/supplier";
   const statusRoute = "/status";
   const typeRoute = "/type";
-  const goodsRoute = "/goods"; // New route to fetch goods
+  const goodsRoute = "/goods";
 
   const [purchase, setPurchase] = useState({
     id: "",
@@ -53,6 +53,24 @@ const PurchaseForm = ({ oldData = null }) => {
         setStatuses(statusRes.data.data);
         setTypes(typeRes.data.data);
         setGoods(goodsRes.data.data);
+
+        // If oldData is not available, pre-select the first item in each list for new entry
+        if (!oldData) {
+          setPurchase((prevPurchase) => ({
+            ...prevPurchase,
+            storeLocationId: storeRes.data.data[0]?._id || "",
+            // userId: userRes.data.data[0]?._id || "",
+            userId: loggedUser._id || "",
+            supplierId: supplierRes.data.data[0]?._id || "",
+            goodsStatusId: statusRes.data.data[0]?._id || "",
+            typeId: typeRes.data.data[0]?._id || "",
+            id: goodsRes.data.data[0]?._id || "",
+          }));
+        }
+        // setPurchase((prevPurchase) => ({
+        //   ...prevPurchase,
+        //   userId: loggedUser._id,
+        // }));
       } catch (err) {
         setError("Error loading data. Please try again.");
       } finally {
@@ -61,12 +79,11 @@ const PurchaseForm = ({ oldData = null }) => {
     };
 
     fetchData();
-  }, [backendUrl]);
-
+  }, [backendUrl, oldData]);
+  console.log(purchase);
   useEffect(() => {
     if (oldData) {
-      // Prefill the form with the old data if we are updating an existing purchase
-      setPurchase(oldData);
+      setPurchase(oldData); // Prefill the form with the old data if updating
     }
   }, [oldData]);
 
@@ -90,15 +107,13 @@ const PurchaseForm = ({ oldData = null }) => {
 
     try {
       let response;
-
-      // If oldData exists, we're updating, so use PUT request
+      // console.log(purchase);
       if (oldData) {
         response = await axios.put(
-          `${backendUrl}${purchaseRoute}/${purchase.id}`,
+          `${backendUrl}${purchaseRoute}/${purchase._id}`,
           purchase
         );
       } else {
-        // Otherwise, we're creating a new purchase with POST
         response = await axios.post(`${backendUrl}${purchaseRoute}`, purchase);
       }
 
@@ -113,18 +128,19 @@ const PurchaseForm = ({ oldData = null }) => {
         supplierId: "",
         goodsStatusId: "",
         typeId: "",
-      }); // Reset form after successful submission
+      });
     } catch (error) {
       alert(error.response?.data?.message || error.message);
     }
+    onSave();
   };
 
   if (loading) {
-    return <div>Loading...</div>; // Loading state
+    return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>{error}</div>; // Error state
+    return <div>{error}</div>;
   }
 
   return (
@@ -147,7 +163,8 @@ const PurchaseForm = ({ oldData = null }) => {
                 onChange={handleChange}
                 required
               >
-                <option>{translate("Select Goods")}</option>
+                {/* <option>{translate("Select Goods")}</option> */}
+                <option value={purchase.id._id}>{purchase.id.name}</option>
                 {goods.map((good) => (
                   <option key={good._id} value={good._id}>
                     {good.name}
@@ -198,7 +215,10 @@ const PurchaseForm = ({ oldData = null }) => {
                 value={purchase.storeLocationId}
                 onChange={handleChange}
               >
-                <option>{translate("Select Store Location")}</option>
+                {/* <option>{translate("Select Store Location")}</option> */}
+                <option value={purchase.storeLocationId._id}>
+                  {purchase.storeLocationId.name}
+                </option>
                 {stores.map((store) => (
                   <option key={store._id} value={store._id}>
                     {store.name}
@@ -207,32 +227,40 @@ const PurchaseForm = ({ oldData = null }) => {
               </select>
             </div>
 
-            <div className="form-group mb-1">
-              <label className="my-2">{translate("User")}</label>
-              <select
-                name="userId"
-                className="form-control"
-                value={purchase.userId}
-                onChange={handleChange}
-              >
-                <option>{translate("Select User")}</option>
-                {users.map((user) => (
-                  <option key={user._id} value={user._id}>
-                    {user.name}
+            {oldData && (
+              <div className="form-group mb-1">
+                <label className="my-2">{translate("User")}</label>
+                <select
+                  name="userId"
+                  className="form-control"
+                  value={purchase.userId}
+                  onChange={handleChange}
+                >
+                  {/* <option>{translate("Select User")}</option> */}
+                  <option value={purchase?.userId?._id}>
+                    {purchase?.userId?.name}
                   </option>
-                ))}
-              </select>
-            </div>
+                  {users.map((user) => (
+                    <option key={user._id} value={user._id}>
+                      {user.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div className="form-group mb-1">
               <label className="my-2">{translate("Supplier")}</label>
               <select
                 name="supplierId"
                 className="form-control"
-                value={purchase.supplierId}
+                value={purchase?.supplierId}
                 onChange={handleChange}
               >
-                <option>{translate("Select Supplier")}</option>
+                {/* <option>{translate("Select Supplier")}</option> */}
+                <option value={purchase?.supplierId?._id}>
+                  {purchase?.supplierId?.name}
+                </option>
                 {suppliers.map((supplier) => (
                   <option key={supplier._id} value={supplier._id}>
                     {supplier.name}
@@ -249,7 +277,10 @@ const PurchaseForm = ({ oldData = null }) => {
                 value={purchase.goodsStatusId}
                 onChange={handleChange}
               >
-                <option>{translate("Select Goods Status")}</option>
+                {/* <option>{translate("Select Goods Status")}</option> */}
+                <option value={purchase?.goodsStatusId?._id}>
+                  {purchase?.goodsStatusId?.name}
+                </option>
                 {statuses.map((status) => (
                   <option key={status._id} value={status._id}>
                     {status.name}
@@ -266,7 +297,10 @@ const PurchaseForm = ({ oldData = null }) => {
                 value={purchase.typeId}
                 onChange={handleChange}
               >
-                <option>{translate("Select Type")}</option>
+                {/* <option>{translate("Select Type")}</option> */}
+                <option value={purchase?.typeId?._id}>
+                  {purchase?.typeId?.name}
+                </option>
                 {types.map((type) => (
                   <option key={type._id} value={type._id}>
                     {type.name}

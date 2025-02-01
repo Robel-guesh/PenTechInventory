@@ -29,7 +29,7 @@ import SupplierForm from "../forms/SupplierForm";
 import PurchaseForm from "../forms/PurchaseForm";
 import WithdrawForm from "../forms/WithdrawForm";
 function AdminDashboard() {
-  const { backendUrl, translate } = useAppContext();
+  const { backendUrl, translate, loggedUser } = useAppContext();
   const sideBarPaths = paths;
   const [sidebarSelection, setSidebarSelection] = useState("goods");
   const [data, setData] = useState([]);
@@ -37,14 +37,15 @@ function AdminDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
   const [showModal, setShowModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalMode, setModalMode] = useState(""); // 'view' or 'edit'
   const [tableHeader, setTableHeader] = useState("");
-  const [currentIndex, setCurrentIndex] = useState(0);
-
+  const [currentIndex, setCurrentIndex] = useState("Goods");
+  const [openMenu, setOpenMenu] = useState(true);
   const navigate = useNavigate();
+
   const formList = {
     category: (
       <CategoryForm
@@ -123,7 +124,6 @@ function AdminDashboard() {
   // Fetch data based on sidebar selection
   const fetchDataByRoute = async (exactPath) => {
     const response = await axios.get(`${backendUrl}/${exactPath}`);
-    // console.log("selected path", exactPath, response.data);
     setSidebarSelection(exactPath);
     setData(response?.data?.data);
     // console.log("withdrawData", data);
@@ -170,7 +170,6 @@ function AdminDashboard() {
     }
   };
 
-  // Use useEffect to trigger data fetch when sidebarSelection changes
   useEffect(() => {
     fetchData();
   }, [backendUrl]);
@@ -180,33 +179,62 @@ function AdminDashboard() {
     if (data) {
       handleSearch();
     }
-  }, [searchTerm, filterStatus, data]);
+  }, [searchTerm, data]);
+
+  useEffect(() => {
+    handleFilter();
+  }, [filterStatus, data, sidebarSelection]);
+
+  // console.log(filterStatus);
+
+  // Handle filter
+  const handleFilter = () => {
+    if (!data) return;
+
+    let filtered = [...data];
+
+    if (sidebarSelection === "goods") {
+      if (filterStatus === "all") {
+        filtered = [...data];
+      } else if (filterStatus === "inStock") {
+        filtered = filtered.filter((item) => item?.qty > item.shortageLevel);
+      } else if (filterStatus === "critical") {
+        filtered = filtered.filter(
+          (item) => item?.qty <= item.shortageLevel && item?.qty > 0
+        );
+      } else if (filterStatus === "outOfStock") {
+        filtered = filtered.filter((item) => item?.qty <= 0);
+      }
+    }
+
+    setFilteredData(filtered);
+  };
 
   // Handle search
   const handleSearch = () => {
     if (!data) return;
 
-    // Filter only items that have a name property and handle cases where `name` is undefined
     let filtered = data.filter((item) => {
       return (
         item?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item?.invoiceNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item?.mobile?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item?.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item?.groupName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item?.goodsId?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item?.id?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item?.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item?.roleId?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item?.sex?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item?.storeLocationId?.name
           ?.toLowerCase()
-          .includes(searchTerm.toLowerCase())
+          .includes(searchTerm.toLowerCase()) ||
+        item?.catagoryId?.name?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     });
-    let withdrawFilter = filtered.filter((item) => {
-      item?.filterStatus === true;
-    });
 
-    setFilteredData(
-      // filterStatus.length > 0 && sidebarSelection === "withdraw"
-      //   ? withdrawFilter
-      //   :
-      filtered
-    );
+    setFilteredData(filtered);
   };
 
   // Handle page change
@@ -224,7 +252,7 @@ function AdminDashboard() {
   };
 
   const handleEditSave = async (itemId, updatedData) => {
-    console.log(itemId);
+    // console.log(itemId);
     // Logic for saving the edited item
     try {
       if (window.confirm("are you sure you want to update this file?")) {
@@ -253,7 +281,11 @@ function AdminDashboard() {
   };
   const handleWithdrawApproval = async (itemId) => {
     try {
-      await axios.put(`${backendUrl}/${sidebarSelection}/approve/${itemId}`);
+      if (window.confirm("are you sure you want Approve?")) {
+        await axios.put(`${backendUrl}/${sidebarSelection}/approve/${itemId}`, {
+          sellerId: loggedUser._id,
+        });
+      }
       fetchDataByRoute(sidebarSelection);
     } catch (error) {
       console.error("Error updating item:", error.message);
@@ -261,7 +293,9 @@ function AdminDashboard() {
   };
   const handleWithdrawConfirmation = async (itemId) => {
     try {
-      await axios.put(`${backendUrl}/${sidebarSelection}/confirm/${itemId}`);
+      await axios.put(`${backendUrl}/${sidebarSelection}/confirm/${itemId}`, {
+        customerId: loggedUser._id,
+      });
       fetchDataByRoute(sidebarSelection);
     } catch (error) {
       console.error("Error updating item:", error.message);
@@ -285,7 +319,8 @@ function AdminDashboard() {
       if (window.confirm("are you sure you want to delete this file?")) {
         await axios.delete(`${backendUrl}/${sidebarSelection}/${itemId}`);
       }
-      fetchData(); // Refresh data
+      // fetchData(); // Refresh data
+      fetchDataByRoute(sidebarSelection);
     } catch (error) {
       console.error("Error deleting item:", error.message);
     }
@@ -303,26 +338,73 @@ function AdminDashboard() {
     <div className="container-fluid">
       <div className="row">
         <div className="col-md-3">
-          <div className="sidebar">
-            <ul className="list-unstyled  ">
-              {sideBarPaths &&
-                sideBarPaths.map((sidePath, index) => (
-                  <li
-                    key={index}
-                    className={` ps-2 my-1 p-1 py-1 pointer  ${
-                      currentIndex === index ? "bg-warning" : "bg-white"
-                    }`}
-                    onClick={() => (
-                      fetchDataByRoute(sidePath.routePath),
-                      setCurrentIndex(index)
-                    )}
-                    // style={{ backgroundColor: "rgba(0,0,0,0.1)" }}
-                  >
-                    {sidePath.label}
-                  </li>
-                ))}
-              {/* Add other sidebar items like category, type, status, etc. */}
-            </ul>
+          <div className="sidebar fixed top-0">
+            <div
+              className="d-flex w-100 justify-content-end "
+              onClick={() => setOpenMenu(!openMenu)}
+            >
+              <span
+                className={`${
+                  openMenu ? "bi bi-x" : "bi bi-list"
+                } fw-bold fs-2 pointer burger`}
+              ></span>
+            </div>
+            <div>
+              <ul
+                className="list-unstyled  "
+                // onClick={() => setOpenMenu(!openMenu)}
+              >
+                {openMenu &&
+                  sideBarPaths[0] &&
+                  sideBarPaths[0].map((sidePath, index) => (
+                    <li
+                      key={index}
+                      className={` ps-2 my-1 p-1 py-1 pointer  ${
+                        currentIndex === sidePath.label
+                          ? "bg-warning"
+                          : "bg-white"
+                      }`}
+                      onClick={() => (
+                        fetchDataByRoute(sidePath.routePath),
+                        setCurrentIndex(sidePath.label)
+                      )}
+                      // style={{ backgroundColor: "rgba(0,0,0,0.1)" }}
+                    >
+                      {sidePath.label}
+                    </li>
+                  ))}
+                {/* Add other sidebar items like category, type, status, etc. */}
+              </ul>
+            </div>
+
+            <div>
+              {/* <div onClick={() => setOpenMenu(!openMenu)}>secondary</div> */}
+              <ul
+                className="list-unstyled  "
+                // onClick={() => setOpenMenu(!openMenu)}
+              >
+                {openMenu &&
+                  sideBarPaths[1] &&
+                  sideBarPaths[1].map((sidePath, index) => (
+                    <li
+                      key={index}
+                      className={` ps-2 my-1 p-1 py-1 pointer  ${
+                        currentIndex === sidePath.label
+                          ? "bg-warning"
+                          : "bg-white"
+                      }`}
+                      onClick={() => (
+                        fetchDataByRoute(sidePath.routePath),
+                        setCurrentIndex(sidePath.label)
+                      )}
+                      // style={{ backgroundColor: "rgba(0,0,0,0.1)" }}
+                    >
+                      {sidePath.label}
+                    </li>
+                  ))}
+                {/* Add other sidebar items like category, type, status, etc. */}
+              </ul>
+            </div>
           </div>
         </div>
         <div className="col-md-9">
@@ -345,45 +427,90 @@ function AdminDashboard() {
               </div>
 
               <div className="col-md-5">
-                {sidebarSelection === "withdraw" && (
-                  <Form.Group className="d-flex gap-2">
-                    <Form.Label>Filter by Status</Form.Label>
-                    <div className=" gap-2">
-                      <Form.Check
-                        type="radio"
-                        label="Pending"
-                        value="isPending"
-                        checked={filterStatus === "isPending"}
-                        onChange={(e) => setFilterStatus(e.target.value)}
-                      />
-                      <Form.Check
-                        type="radio"
-                        label="Approved"
-                        value="isApproved"
-                        checked={filterStatus === "isApproved"}
-                        onChange={(e) => setFilterStatus(e.target.value)}
-                      />
-                      <Form.Check
-                        type="radio"
-                        label="Confirmed"
-                        value="isConfirmed"
-                        checked={filterStatus === "isConfirmed"}
-                        onChange={(e) => setFilterStatus(e.target.value)}
-                      />
-                    </div>
-                  </Form.Group>
-                )}
+                {sidebarSelection === "withdraw" ||
+                  (sidebarSelection === "goods" && (
+                    <Form.Group className="d-flex gap-2">
+                      <Form.Label>{translate("Filter")}</Form.Label>
+                      <div className=" gap-2">
+                        <Form.Check
+                          // type="radio"
+                          label="all"
+                          value="all"
+                          checked={filterStatus === "all"}
+                          onChange={(e) => setFilterStatus(e.target.value)}
+                        />
+                        <Form.Check
+                          // type="radio"
+                          label={
+                            sidebarSelection === "goods"
+                              ? "critical"
+                              : "Pending"
+                          }
+                          value={
+                            sidebarSelection === "goods"
+                              ? "critical"
+                              : "isPending"
+                          }
+                          checked={
+                            filterStatus ===
+                            (sidebarSelection === "goods"
+                              ? "critical"
+                              : "isPending")
+                          }
+                          onChange={(e) => setFilterStatus(e.target.value)}
+                        />
+                        <Form.Check
+                          label={
+                            sidebarSelection === "goods"
+                              ? "Out Of Stock"
+                              : "Approved"
+                          }
+                          value={
+                            sidebarSelection === "goods"
+                              ? "outOfStock"
+                              : "isPending"
+                          }
+                          checked={
+                            filterStatus ===
+                            (sidebarSelection === "goods"
+                              ? "outOfStock"
+                              : "isApproved")
+                          }
+                          onChange={(e) => setFilterStatus(e.target.value)}
+                        />
+                        <Form.Check
+                          label={
+                            sidebarSelection === "goods"
+                              ? "In Stock"
+                              : "Confirmed"
+                          }
+                          value={
+                            sidebarSelection === "goods"
+                              ? "inStock"
+                              : "isConfirmed"
+                          }
+                          checked={
+                            filterStatus ===
+                            (sidebarSelection === "goods"
+                              ? "inStock"
+                              : "isConfirmed")
+                          }
+                          onChange={(e) => setFilterStatus(e.target.value)}
+                        />
+                      </div>
+                    </Form.Group>
+                  ))}
               </div>
             </div>
             <div className=" m-2 d-flex align-items-center justify-content-end  ">
               <NavLink
                 // onClick={goToPage}
                 to={`/${sidebarSelection}`}
-                className="bi bi-plus bg-primary circle-button"
+                className="bi bi-plus  bg-primary circle-button"
                 style={{ width: "50px", height: "50px" }}
               ></NavLink>
             </div>
-            <div className="overflowX-scroll">
+            <div className="overflow-auto " style={{ minHeight: "70vh" }}>
               <Table striped bordered hover>
                 <thead>
                   <tr>
@@ -393,6 +520,9 @@ function AdminDashboard() {
                       ))}
                     {sidebarSelection === "user" && (
                       <th>{translate("Admin")}</th>
+                    )}
+                    {sidebarSelection === "goods" && (
+                      <th>{translate("Stock")}</th>
                     )}
                     {sidebarSelection === "user" && (
                       <th>{translate("Verified")}</th>
@@ -420,14 +550,13 @@ function AdminDashboard() {
                             //   {item[headers.path] || item[headers.path?.name]}
                             // </td>
                             <td key={index}>
-                              {/* Check if the property is a foreign key or nested */}
-                              {headers.path.includes(".")
-                                ? headers.path
-                                    .split(".")
-                                    .reduce(
-                                      (acc, part) => acc && acc[part],
-                                      item
-                                    )
+                              {typeof item[headers.path] === "object"
+                                ? item[headers.path] !== null && (
+                                    <span>
+                                      {item[headers.path]?.name ||
+                                        item[headers.path]?.description}
+                                    </span>
+                                  )
                                 : item[headers.path]}
                             </td>
                           ))}
@@ -458,8 +587,8 @@ function AdminDashboard() {
                                 // variant="warning"
                                 className={`bi  fs-4 pointer p-2 me-2   ${
                                   item.isVerified
-                                    ? "text-success bi-person-check"
-                                    : "text-danger bi-person-fill-x"
+                                    ? "text-success bi-check-circle"
+                                    : "text-danger bi-x-circle"
                                 }`}
                               ></span>
                             </span>
@@ -502,10 +631,10 @@ function AdminDashboard() {
                             <span>
                               <span
                                 // variant="warning"
-                                onClick={() =>
-                                  item.isConfirmed === false &&
-                                  handleWithdrawConfirmation(item._id)
-                                }
+                                // onClick={() =>
+                                //   item.isConfirmed === false &&
+                                //   handleWithdrawConfirmation(item._id)
+                                // }
                                 className={`bi  fs-4 pointer p-2 me-2   ${
                                   item.isConfirmed
                                     ? "text-success bi-check"
@@ -515,17 +644,36 @@ function AdminDashboard() {
                             </span>
                           </td>
                         )}
+                        {sidebarSelection === "goods" && (
+                          <td>
+                            {item?.qty <= 0 ? (
+                              <span className="text-danger fw-bold">
+                                Out of Stock
+                              </span>
+                            ) : item?.qty <= item?.shortageLevel ? (
+                              <span className="text-warning fw-bold">
+                                Critical
+                              </span>
+                            ) : item?.qty > item?.shortageLevel ? (
+                              <span className="text-success fw-bold">
+                                In Stock
+                              </span>
+                            ) : null}
+                          </td>
+                        )}
                         <td>
-                          <span
+                          {/* <span
                             className="bi bi-eye-fill pointer p-2"
                             // variant="primary"
                             onClick={() => handleModalOpen("view", item)}
-                          ></span>{" "}
-                          <span
-                            // variant="warning"
-                            className="bi bi-pencil-fill pointer p-2 "
-                            onClick={() => handleModalOpen("edit", item)}
-                          ></span>{" "}
+                          ></span>{" "} */}
+                          {sidebarSelection !== "withdraw" && (
+                            <span
+                              // variant="warning"
+                              className="bi bi-pencil-fill pointer p-2 "
+                              onClick={() => handleModalOpen("edit", item)}
+                            ></span>
+                          )}{" "}
                           <span
                             // variant="warning"
                             className="bi bi-trash-fill pointer p-2 text-danger"

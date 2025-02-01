@@ -2,14 +2,26 @@ import React, { useState, useEffect } from "react";
 import { useAppContext } from "../../contexts/AppContext";
 import axios from "axios";
 
-function CartsDisplayData({ cardData }) {
+function CartsDisplayData({ cardData, onClose, onFilter }) {
   const [cartCount, setCartCount] = useState(0);
   const [withdrawStatus, setWithdrawStatus] = useState("pending");
-  const { translate, backendUrl, user } = useAppContext();
-
+  const { translate, backendUrl, loggedUser } = useAppContext();
+  const [reason, setReason] = useState([]);
   useEffect(() => {
     setCartCount(cardData.Qty || 0);
-  }, [cardData.Qty]);
+    const fetchReason = async () => {
+      try {
+        // Admin approves a pending withdrawal request by updating status to 'approved'
+        const response = await axios.get(`${backendUrl}/reason`);
+
+        // Update the status to approved for UI
+        setReason(response.data.data);
+      } catch (error) {
+        console.error("Error getting data", error);
+      }
+    };
+    fetchReason();
+  }, [cardData.Qty, backendUrl]);
 
   const handleCount = (operator) => {
     setCartCount((prevCount) => {
@@ -21,20 +33,27 @@ function CartsDisplayData({ cardData }) {
       return prevCount;
     });
   };
-
+  const filterReason = () => {
+    const item = reason.find((data) => data.name === "internal use");
+    console.log(item);
+    if (item) {
+      return item._id;
+    }
+  };
   // Handle creating the withdraw request (for the user)
   const handleSaveOrder = async (status) => {
     if (cartCount <= 0) return;
 
     try {
       const withdrawData = {
-        customerName: "Robel", //user.name, // Using logged-in user info
-        customerId: "6794cbecb1099a4b6e93c5c2", //user._id,
+        customerName: loggedUser.name, //user.name, // Using logged-in user info
+        customerId: loggedUser._id, //user._id,
         goodsId: cardData?._id,
-        sellerId: "6794cbecb1099a4b6e93c5c2", //user._id, // Assuming the seller is the current user
+        sellerId: loggedUser._id, //user._id, // Assuming the seller is the current user
         qty: cartCount,
-        reasonId: "6794cab4b1099a4b6e93c5a2", // cardData.reasonId
+        reasonId: filterReason(), // cardData.reasonId
         status: status,
+        sellingPrice: cardData.unitPrice,
         date: new Date(),
       };
 
@@ -43,10 +62,12 @@ function CartsDisplayData({ cardData }) {
         `${backendUrl}/withdraw/create`,
         withdrawData
       );
-      console.log("Withdraw created:", response.data);
-
+      // console.log("Withdraw created:", response.data);
+      // console.log("withdrawfunciton", onFilter);
+      onFilter();
       // After creating the order, set status to pending
       setWithdrawStatus("pending");
+      // window.location.reload();
     } catch (error) {
       console.error("Error creating withdraw:", error.message);
     }
@@ -57,7 +78,6 @@ function CartsDisplayData({ cardData }) {
     try {
       // Admin approves a pending withdrawal request by updating status to 'approved'
       const response = await axios.patch(`${backendUrl}/withdraw/approve`, {
-        status: "approved",
         withdrawId,
       });
       console.log("Withdraw approved:", response.data);
@@ -75,7 +95,7 @@ function CartsDisplayData({ cardData }) {
 
     try {
       const response = await axios.patch(`${backendUrl}/withdraw/confirm`, {
-        status: "confirmed",
+        // status: "confirmed",
         withdrawId: cardData._id,
       });
       console.log("Withdraw confirmed:", response.data);
@@ -99,6 +119,10 @@ function CartsDisplayData({ cardData }) {
   return (
     <div>
       <div className="card-container">
+        <button
+          className="btn-close "
+          onClick={onClose} // Trigger the onClose function passed as a prop
+        ></button>
         <div className="goods-container">
           <div className="goods-img-container">
             <img
@@ -154,28 +178,12 @@ function CartsDisplayData({ cardData }) {
           <div className="gap-1">
             <span
               className="bg-warning text-black fw-bolder p-1 px-3 rounded-2 cursor-pointer"
-              onClick={() => handleSaveOrder("pending")}
+              onClick={() => {
+                handleSaveOrder("pending"), onClose();
+              }}
               disabled={cartCount <= 0}
             >
               {translate("order")}
-            </span>
-          </div>
-          <div className="gap-1">
-            <span
-              className="bg-success fw-bolder text-white p-1 px-3 rounded-2 cursor-pointer"
-              onClick={() => handleApprove(cardData?._id)} // Admin approves using the withdrawal _id
-              disabled={withdrawStatus !== "pending"}
-            >
-              {translate("approve")}
-            </span>
-          </div>
-          <div className="gap-1">
-            <span
-              className="bg-primary fw-bolder text-white p-1 px-3 rounded-2 cursor-pointer"
-              onClick={handleConfirm}
-              disabled={!isConfirmEnabled}
-            >
-              {translate("confirm")}
             </span>
           </div>
         </div>

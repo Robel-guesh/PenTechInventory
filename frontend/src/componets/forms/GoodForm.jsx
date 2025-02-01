@@ -24,33 +24,61 @@ const GoodForm = ({ oldData, onSave }) => {
   const [imagePreviews, setImagePreviews] = useState([]); // For image previews
 
   useEffect(() => {
-    // Fetch categories and measurements
-    axios.get(`${backendUrl}${categoryRoute}`).then((response) => {
-      setCategories(response.data.data);
-    });
-    axios.get(`${backendUrl}${measurementRoute}`).then((response) => {
-      setMeasurements(response.data.data);
-    });
+    // Fetch categories and measurements in parallel
+    const fetchData = async () => {
+      try {
+        const [categoriesResponse, measurementsResponse] = await Promise.all([
+          axios.get(`${backendUrl}${categoryRoute}`),
+          axios.get(`${backendUrl}${measurementRoute}`),
+        ]);
+
+        const categories = categoriesResponse.data.data;
+        const measurements = measurementsResponse.data.data;
+
+        setCategories(categories);
+        setMeasurements(measurements);
+
+        // Only set good if oldData is not present and data exists
+        if (!oldData) {
+          const updatedGood = { ...good };
+
+          if (categories.length > 0) {
+            updatedGood.catagoryId = categories[0]._id;
+          }
+
+          if (measurements.length > 0) {
+            updatedGood.unitOfMeasureId = measurements[0]._id;
+          }
+
+          // Only update state if changes were made to avoid unnecessary re-renders
+          setGood(updatedGood);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+    // Add dependencies for oldData and good if necessary
 
     // If `oldData` is provided, populate the form with existing good data
     if (oldData) {
       setGood({
         id: oldData.id || "",
         name: oldData.name || "",
-        catagoryId: oldData.catagoryId || "",
-        unitOfMeasureId: oldData.unitOfMeasureId || "",
+        catagoryId: oldData.catagoryId._id || "",
+        unitOfMeasureId: oldData.unitOfMeasureId._id || "",
         qty: oldData.qty || 0,
         description: oldData.description || "",
         shortageLevel: oldData.shortageLevel || 0,
       });
 
       // Set image previews if there are existing images
-      if (oldData.photos && oldData.photos.length > 0) {
-        setImagePreviews(oldData.photos);
+      if (oldData.photo && oldData.photo.length > 0) {
+        setImagePreviews(oldData.photo);
       }
     }
   }, [backendUrl, oldData]);
-
   const handleImageChange = (e) => {
     const files = e.target.files;
     const fileArray = Array.from(files); // Convert FileList to an array
@@ -72,7 +100,7 @@ const GoodForm = ({ oldData, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log(good);
     const formData = new FormData();
 
     // Append form data
@@ -162,7 +190,12 @@ const GoodForm = ({ oldData, onSave }) => {
                 value={good.catagoryId}
                 onChange={handleChange}
               >
-                <option>{translate("Select Category")}</option>
+                {/* <option>{translate("Select Category")}</option> */}
+                {oldData && (
+                  <option value={good.catagoryId._id}>
+                    {good.catagoryId.name}
+                  </option>
+                )}
                 {categories &&
                   categories.map((cat) => (
                     <option key={cat._id} value={cat._id}>
@@ -193,7 +226,13 @@ const GoodForm = ({ oldData, onSave }) => {
                 value={good.unitOfMeasureId}
                 onChange={handleChange}
               >
-                <option>{translate("Select Unit of Measure")}</option>
+                {/* <option>{translate("Select Unit of Measure")}</option> */}
+                {oldData && (
+                  <option value={good.unitOfMeasureId._id}>
+                    {good.unitOfMeasureId.name}
+                  </option>
+                )}
+
                 {measurements &&
                   measurements.map((measurement) => (
                     <option key={measurement._id} value={measurement._id}>
@@ -217,33 +256,34 @@ const GoodForm = ({ oldData, onSave }) => {
             </div>
 
             <div className="image-previews d-flex flex-wrap">
-              {imagePreviews.map((preview, index) => (
-                <div
-                  key={index}
-                  className="image-preview-container position-relative m-2"
-                >
-                  <img
-                    src={
-                      oldData
-                        ? `${backendUrl}/${oldData.photo[0]}`
-                        : `${preview}`
-                    }
-                    alt={`Preview ${index + 1}`}
-                    className="image-preview"
-                    style={{
-                      width: "120px",
-                      height: "120px",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <button
-                    className="btn btn-danger position-absolute top-0 end-0"
-                    onClick={() => handleImageDelete(index)}
+              {imagePreviews.length > 0 &&
+                imagePreviews.map((preview, index) => (
+                  <div
+                    key={index}
+                    className="image-preview-container position-relative m-2"
                   >
-                    X
-                  </button>
-                </div>
-              ))}
+                    <img
+                      src={
+                        oldData
+                          ? `${backendUrl}/${oldData.photo[0]}`
+                          : `${preview}`
+                      }
+                      alt={`Preview ${index + 1}`}
+                      className="image-preview"
+                      style={{
+                        width: "120px",
+                        height: "120px",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <button
+                      className="btn btn-danger position-absolute top-0 end-0"
+                      onClick={() => handleImageDelete(index)}
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
             </div>
 
             <div className="form-group mb-1">

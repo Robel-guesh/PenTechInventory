@@ -4,7 +4,7 @@ const goods = require("../models/goods");
 // Create a new purchase
 exports.createPurchase = async (req, res) => {
   try {
-    // Create the new purchase
+    // Create the new purchase entry first
     const purchaseData = new purchase({
       id: req.body.id,
       qty: req.body.qty,
@@ -17,8 +17,21 @@ exports.createPurchase = async (req, res) => {
       typeId: req.body.typeId, // Changed from typeID to typeId
     });
 
-    // Save the purchase data
+    // Save the new purchase data
     await purchaseData.save();
+
+    // Update all purchase records with the same id
+    const updatedPurchases = await purchase.updateMany(
+      { id: req.body.id }, // Find all purchases with the same id
+      { $set: { sellingPrice: req.body.sellingPrice } } // Set the new selling price
+    );
+
+    // Check if any purchase records were updated
+    if (updatedPurchases.nModified > 0) {
+      console.log(
+        `${updatedPurchases.nModified} purchases updated with new selling price.`
+      );
+    }
 
     // Update the quantity in the goods model (increase the quantity of the purchased goods)
     const goodsData = await goods.findById(req.body.id); // Find the goods by the ID of the purchased item
@@ -31,11 +44,13 @@ exports.createPurchase = async (req, res) => {
     await goodsData.save(); // Save the updated goods quantity
 
     res.status(201).json({
-      message: "Purchase created successfully",
+      message: "Purchase created and selling price updated for all purchases",
       data: purchaseData,
     });
   } catch (error) {
-    res.status(500).json({ error: "Server error while creating purchase" });
+    res
+      .status(500)
+      .json({ error: "Server error while creating or updating purchase" });
   }
 };
 
@@ -95,7 +110,7 @@ exports.updatePurchase = async (req, res) => {
     if (!goodsData) {
       return res.status(404).json({ message: "Goods not found" });
     }
-
+    // console.log(originalPurchase);
     // Revert the previous purchase quantity (decrease stock by original quantity)
     goodsData.qty = Number(goodsData.qty) - Number(originalPurchase.qty);
     await goodsData.save();
@@ -120,7 +135,17 @@ exports.updatePurchase = async (req, res) => {
       },
       { new: true }
     );
+    const updatedPurchases = await purchase.updateMany(
+      { id: originalPurchase.id }, // Find all purchases with the same id
+      { $set: { sellingPrice: req.body.sellingPrice } } // Set the new selling price
+    );
 
+    // Check if any purchase records were updated
+    if (updatedPurchases.nModified > 0) {
+      console.log(
+        `${updatedPurchases.nModified} purchases updated with new selling price.`
+      );
+    }
     res.status(200).json({
       message: "Purchase updated successfully",
       data: purchaseData,

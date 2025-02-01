@@ -30,7 +30,7 @@ function NavBar() {
       <div className="company-logo">
         <img src={logo} alt="" />
       </div>
-      <div className="d-flex gap-2 ">
+      <div className="d-flex gap-2">
         {loggedUser && (
           <div onClick={() => navigate("/")}>
             <span

@@ -23,6 +23,9 @@ const withdrawSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  sellingPrice: {
+    type: Number,
+  },
   reasonId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "reason",
@@ -30,15 +33,19 @@ const withdrawSchema = new mongoose.Schema({
   },
   isPending: {
     type: Boolean,
-    default: false, // Indicates if the withdrawal is pending
+    default: false,
   },
   isApproved: {
     type: Boolean,
-    default: false, // Indicates if the withdrawal has been approved
+    default: false,
   },
   isConfirmed: {
     type: Boolean,
-    default: false, // Indicates if the withdrawal has been confirmed
+    default: false,
+  },
+  returned: {
+    type: Boolean,
+    default: false,
   },
   date: {
     type: Date,

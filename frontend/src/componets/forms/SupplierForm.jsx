@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAppContext } from "../../contexts/AppContext";
 
-const SupplierForm = () => {
+const SupplierForm = ({ oldData, onSave }) => {
   const { backendUrl, translate } = useAppContext();
   const supplierRoute = "/supplier";
 
@@ -11,6 +11,17 @@ const SupplierForm = () => {
     invoiceNumber: "",
     mobile: "",
   });
+
+  useEffect(() => {
+    // If oldData exists (i.e., we are editing an existing supplier), pre-fill the form
+    if (oldData) {
+      setSupplier({
+        name: oldData.name,
+        invoiceNumber: oldData.invoiceNumber,
+        mobile: oldData.mobile,
+      });
+    }
+  }, [oldData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,20 +32,36 @@ const SupplierForm = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        `${backendUrl}${supplierRoute}`,
-        supplier
-      );
+      let response;
+
+      if (oldData) {
+        // Update existing supplier (PUT request)
+        response = await axios.put(
+          `${backendUrl}${supplierRoute}/${oldData._id}`,
+          supplier
+        );
+      } else {
+        // Create new supplier (POST request)
+        response = await axios.post(`${backendUrl}${supplierRoute}`, supplier);
+      }
+
       alert(response.data?.message);
+
+      if (onSave && typeof onSave === "function") {
+        onSave(); // Callback to refresh data or close the form
+      }
     } catch (error) {
       alert(error.response?.data?.message || error.message);
+      console.log(error);
     }
   };
 
   return (
     <div className="d-flex justify-content-center align-items-center w-100">
       <div>
-        <h2 className="text-center">{translate("Create Supplier")}</h2>
+        <h2 className="text-center">
+          {oldData ? translate("Edit Supplier") : translate("Create Supplier")}
+        </h2>
         <form
           className="d-flex flex-wrap p-2 gap-3 justify-content-center"
           onSubmit={handleSubmit}
@@ -75,7 +102,9 @@ const SupplierForm = () => {
             </div>
 
             <button type="submit" className="btn btn-primary my-2 w-100">
-              {translate("Create Supplier")}
+              {oldData
+                ? translate("Update Supplier")
+                : translate("Create Supplier")}
             </button>
           </div>
         </form>

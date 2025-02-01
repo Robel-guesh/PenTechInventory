@@ -1,5 +1,5 @@
 :root {
-  --primary-color: rgb(255, 128, 0);
+  --primary-color: rgb(240, 240, 240);
   --secondary-color: "yellow";
   --black: "black";
 }
@@ -25,6 +25,30 @@
   width: 50px;
   height: 50px;
 }
+.circle {
+  border-radius: 50%;
+}
+.burger {
+  display: none;
+}
+.circle-button {
+  /* background-color: rgb(0, 85, 255); */
+  position: fixed;
+  bottom: 60px;
+  right: 20px;
+  z-index: 1000;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  color: white;
+  align-items: center;
+  font-size: 50px;
+  text-decoration: none;
+  font-weight: 900;
+}
+
 .borderless {
   border: none;
   outline: none;
@@ -40,24 +64,25 @@
 .profile-photo {
   display: flex;
   justify-content: center;
-  margin: 5px;
+  /* margin: 5px; */
   box-shadow: 1px 1px 5px rgba(255, 255, 255, 1);
   justify-content: center;
   align-items: center;
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  padding: 2px;
 }
 .profile-photo img {
-  width: 38px;
+  width: 100%;
   object-fit: fill;
   border-radius: 50%;
 }
 .card-container {
   gap: 5px;
   display: flex;
-  width: 400px;
-
+  width: 350px;
+  height: fit-content;
   /* flex-direction: column; */
 
   flex-wrap: wrap;
@@ -122,12 +147,47 @@
   cursor: pointer;
 }
 .form-containers {
+  padding: 10px;
+
   width: 350px;
 }
-@media (max-width: 650px) {
-  .card-container {
-    flex-basis: 400px;
+.order-card {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 250px;
+  flex-grow: 0.2;
+  /* min-width: 250px; */
+  min-height: 100px;
+
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.report-card {
+  flex-basis: 200px;
+  max-width: 250px;
+  flex-grow: 0.5;
+  /* height: fit-content; */
+  min-height: 200px;
+
+  border: 1px solid rgba(0, 0, 0, 0.25);
+}
+.report-card-list {
+  height: 80px;
+  /* background-color: aqua; */
+}
+@media (max-width: 768px) {
+  .profile-photo {
+    height: 30px;
+    width: 30px;
+  }
+  .burger {
+    display: flex;
+  }
+  .order-card {
     flex-grow: 1;
+  }
+  .card-container {
+    flex-basis: 350px;
+    flex-grow: 0.5;
     width: 100%;
     height: auto;
   }

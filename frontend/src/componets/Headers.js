@@ -1,37 +1,36 @@
 export const goodsHeader = [
   { path: "id", label: "ID" },
   { path: "name", label: "Name" },
-  { path: "qty", label: "stock" },
+  { path: "qty", label: "Amount" },
   { path: "shortageLevel", label: "Shortage level" },
-  { path: "categoryId.name", label: "category" },
+  // { path: "qty", label: "stock" },
+  { path: "catagoryId", label: "category" },
 ];
 export const userHeader = [
   { path: "id", label: "ID" },
   { path: "name", label: "Name" },
   { path: "email", label: "E-mail" },
   { path: "sex", label: "Sex" },
-  { path: "roleId[name]", label: "Role" },
-  { path: "password", label: "password" },
+  // { path: "password", label: "password" },
+  { path: "roleId", label: "Role" },
 ];
 export const withdrawHeader = [
   { path: "customerName", label: "Customer Name" },
-  // { path: "customerId.name", label: "Customer" },
-  // { path: "goodsId.name ", label: "Goods" },
-  // { path: "sellerId.name", label: "Seller" },
-  // { path: "qty", label: "Quantity" },
-  // { path: "reasonId.name", label: "Reason" },
-  // { path: "isPending", label: "Pending" },
-  // { path: "isApproved", label: "Approved" },
-  // { path: "isConfirmed", label: "Confirmed" },
+  { path: "customerId", label: "Customer" },
+  { path: "goodsId", label: "Goods" },
+  { path: "sellerId", label: "Seller" },
+  { path: "qty", label: "Quantity" },
+  { path: "reasonId", label: "Reason" },
+  { path: "sellingPrice", label: "price" },
   // { path: "date", label: "Date" },
 ];
 export const purchaseHeader = [
-  { path: "id.name", label: "Name" },
+  { path: "id", label: "Name" },
   { path: "qty", label: "Quantity" },
 
   { path: "unitPrice", label: "Bought Price" },
   { path: "sellingPrice", label: "selling Price" },
-  { path: "storeLocationId.name", label: "Store" },
+  { path: "storeLocationId", label: "Store" },
 ];
 export const categoryHeader = [{ path: "name", label: "Name" }];
 // export const typeHeader = [{ path: "name", label: "Name" }];

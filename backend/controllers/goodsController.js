@@ -3,6 +3,7 @@ const purchase = require("../models/purchase");
 
 // Create a new good
 exports.createGood = async (req, res) => {
+  // console.log(req.body);
   const photo = req.files ? req.files.map((file) => file.path) : [];
 
   const {
@@ -91,6 +92,7 @@ exports.getGoodById = async (req, res) => {
 // Update a good by ID
 exports.updateGood = async (req, res) => {
   const photo = req.files ? req.files.map((file) => file.path) : [];
+  console.log(req.body);
   try {
     const goodData = await goods.findByIdAndUpdate(
       req.params.id,

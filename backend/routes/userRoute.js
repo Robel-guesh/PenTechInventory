@@ -14,6 +14,7 @@ router.get("/:id", userController.getUserById);
 // Route for updating a user by ID
 router.put("/:id", upload.array("photo"), userController.updateUser);
 router.get("/api/totalUsers", userController.getTotalUsers);
+router.post("/api/login", userController.logInUser);
 // Route for deleting a user by ID
 router.delete("/:id", userController.deleteUser);
 

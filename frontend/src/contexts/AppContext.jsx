@@ -1,5 +1,6 @@
-import axios from "axios";
 import React, { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
+// import decode from "jwt-decode"; // Import jwt-decode
 // require("dotenv").config();
 // Create a context for backend URL, language, admin status, and translations
 const AppContext = createContext();
@@ -14,6 +15,8 @@ export const AppProvider = ({ children }) => {
   // const [currentLanguage, setCurrentLanguage] = useState("eng");
   const [backendUrl, setBackendUrl] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loggedUser, setLoggedUser] = useState("");
+  const [token, setToken] = useState("");
   const companyName = "PTSC";
   const catagoryList = {
     furniture: "fur",
@@ -24,8 +27,8 @@ export const AppProvider = ({ children }) => {
   };
 
   const translationData = {
-    "ADD TO CART": { eng: "add to cart", tig: "nab zembil aetu" },
-    ORDER: { eng: "order", tig: "azz" },
+    "ADD TO CART": { eng: "add to cart", tig: "ናብ ሳፅን ኣእቱ" },
+    ORDER: { eng: "order", tig: "ኣዝዝ" },
   };
   const [translation, setTranslation] = useState(translationData);
   // const translationRoute = "/translations";
@@ -49,11 +52,22 @@ export const AppProvider = ({ children }) => {
       setLanguage(new_language);
     }
   }, []);
+
   useEffect(() => {
     setBackendUrl("http://127.0.0.1:5000");
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsAdmin(true);
+    const newtoken = localStorage.getItem("token");
+    const newUser = JSON.parse(localStorage.getItem("loggedUser"));
+    if (newUser) {
+      setLoggedUser(newUser);
+    }
+
+    if (newtoken) {
+      setToken(newtoken);
+
+      // console.log("user", newUser);
+      if (loggedUser.isAdmin) {
+        setIsAdmin(true);
+      }
     }
   }, []);
 
@@ -99,9 +113,9 @@ export const AppProvider = ({ children }) => {
 
   axios.interceptors.request.use(
     (config) => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        config.headers["Authorization"] = `${token}`;
+      const newtoken = localStorage.getItem("token");
+      if (newtoken) {
+        config.headers["Authorization"] = `${newtoken}`;
       }
       return config;
     },
@@ -127,6 +141,7 @@ export const AppProvider = ({ children }) => {
         customerName,
         translation,
         translate,
+        loggedUser,
       }}
     >
       {children}

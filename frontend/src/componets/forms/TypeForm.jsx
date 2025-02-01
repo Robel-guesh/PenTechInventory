@@ -1,14 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAppContext } from "../../contexts/AppContext";
 
-const TypeForm = () => {
+const TypeForm = ({ oldData, onSave }) => {
   const { backendUrl, translate } = useAppContext();
   const typeRoute = "/type";
 
   const [type, setType] = useState({
     name: "",
   });
+
+  // Set initial values if oldData is passed (for editing)
+  useEffect(() => {
+    if (oldData) {
+      setType({
+        name: oldData.name || "",
+      });
+    }
+  }, [oldData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,8 +28,24 @@ const TypeForm = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`${backendUrl}${typeRoute}`, type);
+      let response;
+      if (oldData) {
+        // Update existing type
+        response = await axios.put(
+          `${backendUrl}${typeRoute}/${oldData._id}`,
+          type
+        );
+      } else {
+        // Create new type
+        response = await axios.post(`${backendUrl}${typeRoute}`, type);
+      }
+
       alert(response.data?.message);
+
+      // Call onSave function if provided (to refresh or update data)
+      if (onSave && typeof onSave === "function") {
+        onSave();
+      }
     } catch (error) {
       alert(error.response?.data?.message || error.message);
     }
@@ -29,7 +54,9 @@ const TypeForm = () => {
   return (
     <div className="d-flex justify-content-center align-items-center w-100">
       <div>
-        <h2 className="text-center">{translate("Create Type")}</h2>
+        <h2 className="text-center">
+          {oldData ? translate("Edit Type") : translate("Create Type")}
+        </h2>
         <form
           className="d-flex flex-wrap p-2 gap-3 justify-content-center"
           onSubmit={handleSubmit}
@@ -48,7 +75,7 @@ const TypeForm = () => {
             </div>
 
             <button type="submit" className="btn btn-primary my-2 w-100">
-              {translate("Create Type")}
+              {oldData ? translate("Update Type") : translate("Create Type")}
             </button>
           </div>
         </form>

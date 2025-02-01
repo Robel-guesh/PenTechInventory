@@ -7,6 +7,7 @@ const withdrawController = require("../controllers/withdrawController");
 router.post("/create", withdrawController.createWithdraw);
 
 // Approve a withdraw
+router.post("/completeWithdraw", withdrawController.createCompleteWithdraw);
 router.put("/approve/:id", withdrawController.approveWithdraw);
 
 // Confirm a withdraw (subtract quantity from inventory)

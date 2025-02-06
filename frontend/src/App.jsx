@@ -30,12 +30,12 @@ function PrivateRoute({ children, paths }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!loggedUser) {
+      navigate("/login");
+    }
     if (loggedUser) {
       if (!loggedUser.isAdmin) navigate("/");
       else navigate(paths);
-    }
-    if (!loggedUser) {
-      navigate("/login");
     }
   }, [loggedUser, navigate]);
 
@@ -53,7 +53,14 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />}></Route>
 
-            <Route path="/" element={<DisplayData />}></Route>
+            <Route
+              path="/"
+              element={
+                <PrivateRoute paths="/">
+                  <DisplayData />
+                </PrivateRoute>
+              }
+            ></Route>
             <Route
               path="/category"
               element={
@@ -137,9 +144,10 @@ function App() {
             <Route
               path="/user"
               element={
-                <PrivateRoute paths="/user">
-                  <UserForm />
-                </PrivateRoute>
+                // <PrivateRoute
+                // paths="/user">
+                <UserForm />
+                // </PrivateRoute>
               }
             />
             <Route

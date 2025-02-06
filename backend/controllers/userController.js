@@ -4,7 +4,11 @@ const bcrypt = require("bcryptjs");
 // Create a new user
 exports.createUser = async (req, res) => {
   const photo = req.files ? req.files.map((file) => file.path) : [];
-  // console.log(photo);
+  console.log(photo, req.body);
+  // const fetchedUser = await user.findOne({ id });
+  // if( fetchedUser){
+  //   return
+  // }
   try {
     const userData = new user({
       isAdmin: req.body.isAdmin,

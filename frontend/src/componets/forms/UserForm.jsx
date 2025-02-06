@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAppContext } from "../../contexts/AppContext";
+import { Link } from "react-router-dom";
 
 const UserForm = ({ oldData, onSave }) => {
   const { backendUrl, translate, loggedUser } = useAppContext();
@@ -25,7 +26,7 @@ const UserForm = ({ oldData, onSave }) => {
 
   useEffect(() => {
     axios.get(`${backendUrl}${roleRoute}`).then((response) => {
-      setRoles(response.data.data);
+      setRoles(response?.data?.data);
       if (!oldData) {
         setUser({ ...user, roleId: response?.data?.data[0] });
       }
@@ -40,22 +41,22 @@ const UserForm = ({ oldData, onSave }) => {
         email: oldData.email,
         password: "", // In case the password shouldn't be pre-filled
         photo: oldData.photo, // Assuming we don't need to pre-load photos on update
-        roleId: oldData.roleId._id,
+        roleId: oldData.roleId,
         isAdmin: oldData.isAdmin,
         isVerified: oldData.isVerified,
       });
     } else {
       // Generate user ID for new user
       axios.get(`${backendUrl}${totalUsersRoute}`).then((response) => {
-        setTotalUsers(response.data.data);
+        setTotalUsers(Number(response?.data?.data));
         setUser((prevUser) => ({
           ...prevUser,
-          id: `PTSC/${response.data.data}`,
+          id: `PTSC/${response?.data?.data}`,
         }));
       });
     }
   }, [backendUrl, oldData]);
-  console.log(user);
+  // console.log(user);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
@@ -73,7 +74,7 @@ const UserForm = ({ oldData, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    // console.log(user);
     try {
       const formData = new FormData();
       formData.append("name", user.name);
@@ -83,7 +84,7 @@ const UserForm = ({ oldData, onSave }) => {
       formData.append("password", user.password);
       formData.append("isAdmin", user.isAdmin);
       formData.append("isVerified", user.isVerified);
-      formData.append("roleId", user.roleId);
+      formData.append("roleId", user.roleId._id);
       user.photo.forEach((file) => {
         formData.append("photo", file);
       });
@@ -117,6 +118,7 @@ const UserForm = ({ oldData, onSave }) => {
       if (onSave && typeof onSave === "function") {
         onSave(); // Callback to refresh data or close the form
       }
+      generateUserId();
     } catch (error) {
       alert(error.response?.data?.message || error.message);
       console.log(error);
@@ -124,89 +126,94 @@ const UserForm = ({ oldData, onSave }) => {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center w-100">
-      <div>
-        <h2 className="text-center">
+    <div
+      className="d-flex justify-content-center align-items-center w-100"
+      style={{ height: "80vh" }}
+    >
+      {/* <div className="login-form "> */}
+      <div className="login-form d-flex flex-column justify-content-center h-100 gap-4  ">
+        {/* <h2 className="text-center">
           {oldData ? translate("Edit User") : translate("Create User")}
-        </h2>
+        </h2> */}
         <form
-          className="d-flex flex-wrap p-2 gap-3 justify-content-center"
+          // className="d-flex flex-wrap p-2  justify-content-center"
           onSubmit={handleSubmit}
         >
-          <div className="form-containers">
-            {/* Name */}
-            <div className="form-group mb-1">
-              <label className="my-2">{translate("Name")}</label>
-              <input
-                type="text"
-                name="name"
-                className="form-control"
-                value={user.name}
-                onChange={handleChange}
-                required
-              />
-            </div>
+          {/* <div className="login-form"> */}
+          {/* Name */}
+          <div className="form-group mb-1">
+            <label className="my-2">{translate("Name")}</label>
+            <input
+              type="text"
+              name="name"
+              className="form-control"
+              value={user.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-            {/* Sex */}
-            <div className="form-group">
-              <label>{translate("Sex")}</label>
-              <div className="d-flex w-100 gap-2">
-                <label>
-                  <input
-                    className="me-2"
-                    type="radio"
-                    name="sex"
-                    value="Male"
-                    checked={user.sex === "Male"}
-                    onChange={handleChange}
-                    required
-                  />
-                  {translate("Male")}
-                </label>
-                <label>
-                  <input
-                    className="me-2"
-                    type="radio"
-                    name="sex"
-                    value="Female"
-                    checked={user.sex === "Female"}
-                    onChange={handleChange}
-                    required
-                  />
-                  {translate("Female")}
-                </label>
-              </div>
+          {/* Sex */}
+          <div className="form-group ">
+            <label>{translate("Sex")}</label>
+            <div className="d-flex w-100 gap-2">
+              <label>
+                <input
+                  className="me-2"
+                  type="radio"
+                  name="sex"
+                  value="Male"
+                  checked={user.sex === "Male"}
+                  onChange={handleChange}
+                  required
+                />
+                {translate("Male")}
+              </label>
+              <label>
+                <input
+                  className="me-2"
+                  type="radio"
+                  name="sex"
+                  value="Female"
+                  checked={user.sex === "Female"}
+                  onChange={handleChange}
+                  required
+                />
+                {translate("Female")}
+              </label>
             </div>
+          </div>
 
-            {/* Email */}
-            <div className="form-group mb-1">
-              <label className="my-2">{translate("Email")}</label>
-              <input
-                type="email"
-                name="email"
-                className="form-control"
-                value={user.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
+          {/* Email */}
+          <div className="form-group mb-1">
+            <label className="my-2">{translate("Email")}</label>
+            <input
+              type="email"
+              name="email"
+              className="form-control"
+              value={user.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-            {/* Password */}
-            <div className="form-group mb-1">
-              <label className="my-2">{translate("Password")}</label>
-              <input
-                type="password"
-                name="password"
-                className="form-control"
-                value={user.password}
-                onChange={handleChange}
-                required
-              />
-            </div>
+          {/* Password */}
+          <div className="form-group mb-1">
+            <label className="my-2">{translate("Password")}</label>
+            <input
+              type="password"
+              name="password"
+              className="form-control"
+              value={user.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-            {/* Photos */}
+          {/* Photos */}
+          {loggedUser && (
             <div className="form-group mb-1">
-              <label className="my-2">{translate("Photos")}</label>
+              <label className="my-2">{translate("Profile Photo")}</label>
               <input
                 type="file"
                 name="photo"
@@ -215,8 +222,10 @@ const UserForm = ({ oldData, onSave }) => {
                 onChange={handleFileChange}
               />
             </div>
+          )}
 
-            {/* Role */}
+          {/* Role */}
+          {loggedUser && (
             <div className="form-group mb-1">
               <label className="my-2">{translate("Role")}</label>
               <select
@@ -226,16 +235,22 @@ const UserForm = ({ oldData, onSave }) => {
                 onChange={handleChange}
               >
                 {/* <option>{translate("Select Role")}</option> */}
-                <option value={user?.roleId?._id}>{user?.roleId?.name}</option>
-                {roles.map((role) => (
+                {oldData && (
+                  <option value={user?.roleId?._id}>
+                    {user?.roleId?.name}
+                  </option>
+                )}
+                {roles?.map((role) => (
                   <option key={role._id} value={role._id}>
                     {role.name}
                   </option>
                 ))}
               </select>
             </div>
+          )}
 
-            {/* User ID */}
+          {/* User ID */}
+          {loggedUser && (
             <div className="form-group mb-1">
               <label className="my-2">{translate("ID")}</label>
               <div className="d-flex align-items-center justify-content-between">
@@ -255,40 +270,44 @@ const UserForm = ({ oldData, onSave }) => {
                 </span>
               </div>
             </div>
+          )}
 
-            {/* Admin & Verified */}
-            {loggedUser.isAdmin && (
-              <div className="d-flex gap-2 w-100 justify-content-evenly">
-                <div className="form-group mb-1">
-                  <label className="m-2">{translate("Is Admin")}</label>
-                  <input
-                    type="checkbox"
-                    name="isAdmin"
-                    checked={user.isAdmin}
-                    onChange={(e) =>
-                      setUser({ ...user, isAdmin: e.target.checked })
-                    }
-                  />
-                </div>
-
-                <div className="form-group mb-1">
-                  <label className="m-2">{translate("Is Verified")}</label>
-                  <input
-                    type="checkbox"
-                    name="isVerified"
-                    checked={user.isVerified}
-                    onChange={(e) =>
-                      setUser({ ...user, isVerified: e.target.checked })
-                    }
-                  />
-                </div>
+          {/* Admin & Verified */}
+          {loggedUser?.isAdmin && (
+            <div className="d-flex gap-2 w-100 justify-content-evenly">
+              <div className="form-group mb-1">
+                <label className="m-2">{translate("Is Admin")}</label>
+                <input
+                  type="checkbox"
+                  name="isAdmin"
+                  checked={user.isAdmin}
+                  onChange={(e) =>
+                    setUser({ ...user, isAdmin: e.target.checked })
+                  }
+                />
               </div>
-            )}
 
-            <button type="submit" className="btn btn-primary my-2 w-100">
-              {oldData ? translate("Update User") : translate("Create User")}
-            </button>
+              <div className="form-group mb-1">
+                <label className="m-2">{translate("Is Verified")}</label>
+                <input
+                  type="checkbox"
+                  name="isVerified"
+                  checked={user.isVerified}
+                  onChange={(e) =>
+                    setUser({ ...user, isVerified: e.target.checked })
+                  }
+                />
+              </div>
+            </div>
+          )}
+
+          <button type="submit" className="btn btn-primary my-2 w-100">
+            {oldData ? translate("Update User") : translate("Create User")}
+          </button>
+          <div className="d-flex justify-content-center ">
+            <Link to="/login">Already have an account </Link>
           </div>
+          {/* </div> */}
         </form>
       </div>
     </div>

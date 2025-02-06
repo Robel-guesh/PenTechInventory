@@ -250,7 +250,8 @@ const WithdrawForm = ({ oldData = null }) => {
               <div className="form-group mb-1">
                 <label className="my-2">{translate("Price")}</label>
                 <input
-                  type="text"
+                  // type="text"
+                  type="number"
                   name="sellingPrice"
                   className="form-control"
                   value={withdraw.sellingPrice || 0}

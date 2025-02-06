@@ -275,7 +275,7 @@ function DisplayData() {
       {goodsData && (
         <div className="d-flex mt-5">
           <p className="w-100 text-center">
-            {translate("select one of our product you want to buy")}
+            {translate("select one of goods you want to take")}
           </p>
         </div>
       )}

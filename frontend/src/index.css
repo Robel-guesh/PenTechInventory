@@ -153,13 +153,17 @@
 }
 .order-card {
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   flex-basis: 250px;
   flex-grow: 0.2;
   /* min-width: 250px; */
-  min-height: 100px;
+  min-height: 150px;
 
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.login-form {
+  width: 400px;
+  padding: 10px;
 }
 .report-card {
   flex-basis: 200px;
@@ -206,4 +210,9 @@
     flex-grow: 1;
     height: auto;
   } */
+}
+@media (max-width: 450px) {
+  .login-form {
+    width: 100%;
+  }
 }

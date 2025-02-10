@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from "../../assets/logo.png";
 import profile_photo from "../../assets/profilePhoto.png";
 import { useAppContext } from "../../contexts/AppContext";
@@ -13,7 +13,9 @@ function NavBar() {
     loggedUser,
     backendUrl,
     translate,
+    totalCart,
   } = useAppContext();
+
   const navigate = useNavigate();
   const handleLogOut = () => {
     localStorage.removeItem("token");
@@ -21,11 +23,15 @@ function NavBar() {
     navigate("/login");
     window.location.reload();
   };
+  // console.log("logged user is", loggedUser);
+  const [openProfile, setOpenProfile] = useState(false);
   return (
     <div
-      className={`d-flex justify-content-between gap-2 align-items-center flex-wrap ${
-        darkMode ? defaultBackground : "bg-green"
+      className={`d-flex justify-content-between gap-2 align-items-center  flex-wrap shadow-sm  position-fixed w-100  ${
+        // darkMode ? defaultBackground : "bg-green"
+        defaultBackground
       } `}
+      style={{ zIndex: "1000" }}
     >
       <div className="company-logo">
         <img src={logo} alt="" />
@@ -36,8 +42,8 @@ function NavBar() {
             <span
               className={
                 darkMode
-                  ? "text-white bi bi-house mx-2 fw-bold fs-5 pointer"
-                  : "text-black bi bi-house mx-2 fw-bold fs-5 pointer"
+                  ? "text-white bi bi-house mx-1 fw-bold fs-6 pointer"
+                  : "text-black bi bi-house mx-1 fw-bold fs-6 pointer"
               }
             ></span>
           </div>
@@ -47,8 +53,8 @@ function NavBar() {
             <span
               className={
                 darkMode
-                  ? "text-white bi bi-grid mx-2 fw-bold fs-5 pointer"
-                  : "text-black bi bi-grid mx-2 fw-bold fs-5 pointer"
+                  ? "text-white bi bi-grid mx-1 fw-bold fs-6 pointer"
+                  : "text-black bi bi-grid mx-1 fw-bold fs-6 pointer"
               }
             ></span>
           </div>
@@ -58,8 +64,8 @@ function NavBar() {
             <span
               className={
                 darkMode
-                  ? "text-white bi bi-graph-up mx-2 fw-bold fs-5 pointer"
-                  : "text-black bi bi-graph-up mx-2 fw-bold fs-5 pointer"
+                  ? "text-white bi bi-graph-up mx-1 fw-bold fs-6 pointer"
+                  : "text-black bi bi-graph-up mx-1 fw-bold fs-6 pointer"
               }
             ></span>
           </div>
@@ -69,27 +75,23 @@ function NavBar() {
             <span
               className={
                 darkMode
-                  ? "text-white bi bi-download mx-2 fw-bold fs-5 pointer"
-                  : "text-black bi bi-download mx-2 fw-bold fs-5 pointer"
+                  ? "text-white bi bi-download mx-1 fw-bold fs-6 pointer"
+                  : "text-black bi bi-download mx-1 fw-bold fs-6 pointer"
               }
             ></span>
           </div>
         )}
       </div>
       <div
-        className="d-flex gap-2 text-white  align-items-center"
+        className="d-flex gap-1 text-white  align-items-center"
         style={{ cursor: "pointer" }}
       >
         {loggedUser && (
-          <div className="d-flex justify-content-center align-items-center">
-            <div className="profile-photo  ">
-              <img src={`${backendUrl}/${loggedUser.photo[0]}`} alt="profile" />
-            </div>
-            {/* <div
-              className={`${darkMode ? "text-white" : "text-dark"}  mx-1   `}
-            >
-              {loggedUser.name}
-            </div> */}
+          <div className={`${defaultBackground}  p-2 `}>
+            <span
+              className={`${defaultBackground}  bi bi-cart fw-bolder`}
+            ></span>
+            <small>{totalCart}</small>
           </div>
         )}
         <div
@@ -103,17 +105,66 @@ function NavBar() {
             className={
               darkMode
                 ? "text-warning bi bi-sun-fill mx-1  "
-                : "text-black bi bi-sun-fill mx-1"
+                : "text-black bi bi-moon-fill mx-1"
             }
           ></span>
         </div>
+
         {loggedUser && (
-          <div
-            onClick={handleLogOut}
-            className={`${
-              darkMode ? "text-white" : "text-dark"
-            }  mx-3 bi bi-box-arrow-right  fs-5 fw-bolder `}
-          ></div>
+          <div className="d-flex justify-content-center align-items-center">
+            <div
+              className="profile-photo  m-1"
+              onClick={() => setOpenProfile(!openProfile)}
+            >
+              <img
+                className="h-100"
+                src={`${backendUrl}/${loggedUser.photo[0]}`}
+                alt="profile"
+              />
+            </div>
+            {openProfile && (
+              <div
+                className={`settings ${darkMode ? "bg-dark" : "bg-light"}   `}
+              >
+                <div
+                  className={`border-bottom border-1 border-warning w-100 py-2 ${
+                    darkMode ? "text-white" : "text-dark"
+                  }`}
+                  style={{ fontSize: "14px" }}
+                >
+                  <span
+                    className={`bi bi-pen me-1 ${
+                      darkMode ? "text-white" : "text-dark"
+                    }`}
+                  ></span>
+                  <span className="my-2">{translate("edit Profile")}</span>
+                </div>
+                {loggedUser && (
+                  <div
+                    onClick={handleLogOut}
+                    className={` d-flex align-items-center  `}
+                  >
+                    <span
+                      className={`me-1 ${
+                        darkMode ? "text-white" : "text-dark"
+                      }   bi bi-box-arrow-right  fs-6 fw-bolder `}
+                    ></span>
+                    <span
+                      className={`${darkMode ? "text-white" : "text-dark"}`}
+                      style={{ fontSize: "14px" }}
+                    >
+                      {translate("Log Out")}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+            {/* <div
+              className={`${darkMode ? "text-white" : "text-dark"}  mx-1   `}
+            >
+              {loggedUser.name}
+            </div> */}
+          </div>
         )}
       </div>
     </div>

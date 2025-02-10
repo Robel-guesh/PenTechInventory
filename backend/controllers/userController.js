@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 // Create a new user
 exports.createUser = async (req, res) => {
   const photo = req.files ? req.files.map((file) => file.path) : [];
-  console.log(photo, req.body);
+  console.log(photo, req.body, req.body.roleId._id);
   // const fetchedUser = await user.findOne({ id });
   // if( fetchedUser){
   //   return
@@ -36,7 +36,9 @@ exports.logInUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const fetchedUser = await user.findOne({ email });
+    const fetchedUser = await user
+      .findOne({ email })
+      .populate("roleId", "name");
 
     if (!fetchedUser) {
       return res.status(404).json({ message: "User not found" });
@@ -125,7 +127,8 @@ exports.getUserById = async (req, res) => {
 // Update a user by ID
 exports.updateUser = async (req, res) => {
   const photo = req.files ? req.files.map((file) => file.path) : [];
-  // console.log(req.params.id, req.body,photo);
+  console.log(req.params.id, req.body, photo);
+  console.log("type", typeof req.body.roleId);
 
   try {
     // Fetch the current user data to copy
@@ -158,6 +161,10 @@ exports.updateUser = async (req, res) => {
       password: hashedPassword, // Update password only if provided
       photo: photo.length > 0 ? photo : userData.photo, // Update photo if provided, else retain the old one
       roleId: req.body.roleId || userData.roleId,
+      // roleId:
+      //   typeof req.body.roleId === "object" && req.body.roleId !== null
+      //     ? req.body.roleId._id
+      //     : req.body.roleId || userData.roleId,
     };
 
     // Update the user in the database with the modified fields

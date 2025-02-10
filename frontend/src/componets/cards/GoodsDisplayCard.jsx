@@ -3,7 +3,8 @@ import { useAppContext } from "../../contexts/AppContext";
 
 function GoodsDisplayCard({ cardData, handleAddToCart, quantityDatas }) {
   const [count, setCount] = useState(0);
-  const { translate, backendUrl, loggedUser } = useAppContext();
+  const { translate, backendUrl, loggedUser, defaultBackground } =
+    useAppContext();
 
   const Birr = "Birr";
 
@@ -78,10 +79,12 @@ function GoodsDisplayCard({ cardData, handleAddToCart, quantityDatas }) {
             {/* <div>{cardData.catagoryId && cardData.catagoryId.name}</div> */}
             <div>{cardData?.catagoryId?.name}</div>
           </div>
-          <div className="d-flex flex-column  rounded-2  bg-light justify-content-center align-items-center">
+          <div
+            className={`${defaultBackground} d-flex flex-column  rounded-2   justify-content-center align-items-center`}
+          >
             <div>
               <span
-                className=" bi  bi-caret-up-fill text-secondary px-2 pointer"
+                className=" bi  bi-caret-up-fill text-primary px-2 pointer"
                 onClick={() => handleCount("increase", cardData?.qty)}
                 // onClick={() => handleCount("increase", quantityDatas?.qty)}
               ></span>
@@ -91,7 +94,8 @@ function GoodsDisplayCard({ cardData, handleAddToCart, quantityDatas }) {
               {" "}
               <input
                 type="text"
-                className="borderless small-input"
+                // className="borderless small-input"
+                className={`${defaultBackground} borderless small-input`}
                 value={count}
                 onChange={(e) =>
                   setCount(
@@ -104,7 +108,7 @@ function GoodsDisplayCard({ cardData, handleAddToCart, quantityDatas }) {
             </div>
             <div>
               <span
-                className="  px-2 bi bi-caret-down-fill text-secondary pointer"
+                className="  px-2 bi bi-caret-down-fill text-primary pointer"
                 onClick={() => handleCount("decrease", cardData.qty)}
               ></span>
             </div>

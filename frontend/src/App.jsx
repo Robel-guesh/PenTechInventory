@@ -50,131 +50,133 @@ function App() {
           <nav>
             <NavBar />
           </nav>
-          <Routes>
-            <Route path="/login" element={<Login />}></Route>
+          <div className="position-relative " style={{ top: "60px" }}>
+            <Routes>
+              <Route path="/login" element={<Login />}></Route>
 
-            <Route
-              path="/"
-              element={
-                <PrivateRoute paths="/">
-                  <DisplayData />
-                </PrivateRoute>
-              }
-            ></Route>
-            <Route
-              path="/category"
-              element={
-                <PrivateRoute paths="/category">
-                  <CategoryForm />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/report"
-              element={
-                <PrivateRoute paths="/report">
-                  <ReportCard />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/goods"
-              element={
-                <PrivateRoute paths="/goods">
-                  <GoodForm />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/measurement"
-              element={
-                <PrivateRoute paths="/measurement">
-                  <MeasurementForm />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/purchase"
-              element={
-                <PrivateRoute paths="/purchase">
-                  <PurchaseForm />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/reason"
-              element={
-                <PrivateRoute paths="/reason">
-                  <ReasonForm />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/status"
-              element={
-                <PrivateRoute paths="/status">
-                  <StatusForm />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/store"
-              element={
-                <PrivateRoute paths="/store">
-                  <StoreForm />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/supplier"
-              element={
-                <PrivateRoute paths="/supplier">
-                  <SupplierForm />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/type"
-              element={
-                <PrivateRoute paths="/type">
-                  <TypeForm />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/user"
-              element={
-                // <PrivateRoute
-                // paths="/user">
-                <UserForm />
-                // </PrivateRoute>
-              }
-            />
-            <Route
-              path="/withdraw"
-              element={
-                <PrivateRoute paths="/withdraw">
-                  <WithdrawForm />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/role"
-              element={
-                <PrivateRoute paths="/role">
-                  <RoleForm />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/adminDashboard"
-              element={
-                <PrivateRoute paths="/adminDashboard">
-                  <AdminDashboard />
-                </PrivateRoute>
-              }
-            />
-          </Routes>
+              <Route
+                path="/"
+                element={
+                  <PrivateRoute paths="/">
+                    <DisplayData />
+                  </PrivateRoute>
+                }
+              ></Route>
+              <Route
+                path="/category"
+                element={
+                  <PrivateRoute paths="/category">
+                    <CategoryForm />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/report"
+                element={
+                  <PrivateRoute paths="/report">
+                    <ReportCard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/goods"
+                element={
+                  <PrivateRoute paths="/goods">
+                    <GoodForm />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/measurement"
+                element={
+                  <PrivateRoute paths="/measurement">
+                    <MeasurementForm />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/purchase"
+                element={
+                  <PrivateRoute paths="/purchase">
+                    <PurchaseForm />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/reason"
+                element={
+                  <PrivateRoute paths="/reason">
+                    <ReasonForm />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/status"
+                element={
+                  <PrivateRoute paths="/status">
+                    <StatusForm />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/store"
+                element={
+                  <PrivateRoute paths="/store">
+                    <StoreForm />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/supplier"
+                element={
+                  <PrivateRoute paths="/supplier">
+                    <SupplierForm />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/type"
+                element={
+                  <PrivateRoute paths="/type">
+                    <TypeForm />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/user"
+                element={
+                  // <PrivateRoute
+                  // paths="/user">
+                  <UserForm />
+                  // </PrivateRoute>
+                }
+              />
+              <Route
+                path="/withdraw"
+                element={
+                  <PrivateRoute paths="/withdraw">
+                    <WithdrawForm />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/role"
+                element={
+                  <PrivateRoute paths="/role">
+                    <RoleForm />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/adminDashboard"
+                element={
+                  <PrivateRoute paths="/adminDashboard">
+                    <AdminDashboard />
+                  </PrivateRoute>
+                }
+              />
+            </Routes>
+          </div>
           {/* <Route path="/category" element={<CategoryForm />}></Route>
             <Route path="/goods" element={<GoodForm />}></Route>
             <Route path="/measurement" element={<MeasurementForm />}></Route>

@@ -5,7 +5,8 @@ import axios from "axios";
 function CartsDisplayData({ cardData, onClose, onFilter }) {
   const [cartCount, setCartCount] = useState(0);
   const [withdrawStatus, setWithdrawStatus] = useState("pending");
-  const { translate, backendUrl, loggedUser } = useAppContext();
+  const { translate, backendUrl, loggedUser, defaultBackground } =
+    useAppContext();
   const [reason, setReason] = useState([]);
   useEffect(() => {
     setCartCount(cardData.Qty || 0);
@@ -22,7 +23,7 @@ function CartsDisplayData({ cardData, onClose, onFilter }) {
     };
     fetchReason();
   }, [cardData.Qty, backendUrl]);
-
+  // console.log("cartdata", cardData);
   const handleCount = (operator) => {
     setCartCount((prevCount) => {
       if (operator === "decrease" && prevCount > 0) {
@@ -120,7 +121,7 @@ function CartsDisplayData({ cardData, onClose, onFilter }) {
     <div>
       <div className="card-container">
         <button
-          className="btn-close "
+          className="btn-close bg-danger "
           onClick={onClose} // Trigger the onClose function passed as a prop
         ></button>
         <div className="goods-container">
@@ -142,10 +143,12 @@ function CartsDisplayData({ cardData, onClose, onFilter }) {
               </div>
               <div>{cardData.category && cardData.category}</div>
             </div>
-            <div className="d-flex flex-column rounded-2 bg-light justify-content-center align-items-center">
+            <div
+              className={`${defaultBackground} d-flex flex-column rounded-2  justify-content-center align-items-center`}
+            >
               <div>
                 <span
-                  className="bi bi-caret-up-fill text-secondary px-2 pointer"
+                  className="bi bi-caret-up-fill text-primary px-2 pointer"
                   onClick={() => handleCount("increase")}
                 ></span>
               </div>
@@ -153,7 +156,7 @@ function CartsDisplayData({ cardData, onClose, onFilter }) {
               <div className="text-black fw-bolder">
                 <input
                   type="text"
-                  className="borderless small-input"
+                  className={`${defaultBackground} borderless small-input`}
                   value={cartCount}
                   onChange={(e) =>
                     setCartCount(
@@ -166,7 +169,7 @@ function CartsDisplayData({ cardData, onClose, onFilter }) {
               </div>
               <div>
                 <span
-                  className="px-2 bi bi-caret-down-fill text-secondary pointer"
+                  className="px-2 bi bi-caret-down-fill text-primary pointer"
                   onClick={() => handleCount("decrease")}
                 ></span>
               </div>

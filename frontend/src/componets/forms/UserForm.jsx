@@ -56,7 +56,7 @@ const UserForm = ({ oldData, onSave }) => {
       });
     }
   }, [backendUrl, oldData]);
-  // console.log(user);
+  console.log(user);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
@@ -74,7 +74,7 @@ const UserForm = ({ oldData, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log(user);
+    console.log(user);
     try {
       const formData = new FormData();
       formData.append("name", user.name);
@@ -84,7 +84,10 @@ const UserForm = ({ oldData, onSave }) => {
       formData.append("password", user.password);
       formData.append("isAdmin", user.isAdmin);
       formData.append("isVerified", user.isVerified);
-      formData.append("roleId", user.roleId._id);
+      formData.append(
+        "roleId",
+        typeof user.roleId === "object" ? user.roleId._id : user.roleId
+      );
       user.photo.forEach((file) => {
         formData.append("photo", file);
       });
@@ -118,7 +121,7 @@ const UserForm = ({ oldData, onSave }) => {
       if (onSave && typeof onSave === "function") {
         onSave(); // Callback to refresh data or close the form
       }
-      generateUserId();
+      // generateUserId();
     } catch (error) {
       alert(error.response?.data?.message || error.message);
       console.log(error);
@@ -128,7 +131,7 @@ const UserForm = ({ oldData, onSave }) => {
   return (
     <div
       className="d-flex justify-content-center align-items-center w-100"
-      style={{ height: "80vh" }}
+      // style={{ minHeight: "80vh" }}
     >
       {/* <div className="login-form "> */}
       <div className="login-form d-flex flex-column justify-content-center h-100 gap-4  ">
@@ -206,7 +209,7 @@ const UserForm = ({ oldData, onSave }) => {
               className="form-control"
               value={user.password}
               onChange={handleChange}
-              required
+              required={oldData ? false : true}
             />
           </div>
 

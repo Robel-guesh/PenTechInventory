@@ -29,7 +29,8 @@ import SupplierForm from "../forms/SupplierForm";
 import PurchaseForm from "../forms/PurchaseForm";
 import WithdrawForm from "../forms/WithdrawForm";
 function AdminDashboard() {
-  const { backendUrl, translate, loggedUser } = useAppContext();
+  const { backendUrl, translate, loggedUser, defaultBackground } =
+    useAppContext();
   const sideBarPaths = paths;
   const [sidebarSelection, setSidebarSelection] = useState("goods");
   const [data, setData] = useState([]);
@@ -335,10 +336,10 @@ function AdminDashboard() {
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
-    <div className="container-fluid">
+    <div className={` ${defaultBackground} container-fluid`}>
       <div className="row">
         <div className="col-md-3">
-          <div className="sidebar fixed top-0">
+          <div className={`${defaultBackground} sidebar fixed top-0`}>
             <div
               className="d-flex w-100 justify-content-end "
               onClick={() => setOpenMenu(!openMenu)}
@@ -349,9 +350,9 @@ function AdminDashboard() {
                 } fw-bold fs-2 pointer burger`}
               ></span>
             </div>
-            <div>
+            <div className={`${defaultBackground}`}>
               <ul
-                className="list-unstyled  "
+                className={`${defaultBackground} list-unstyled  `}
                 // onClick={() => setOpenMenu(!openMenu)}
               >
                 {openMenu &&
@@ -359,10 +360,10 @@ function AdminDashboard() {
                   sideBarPaths[0].map((sidePath, index) => (
                     <li
                       key={index}
-                      className={` ps-2 my-1 p-1 py-1 pointer  ${
+                      className={`${defaultBackground} ps-2 my-1 p-1 py-1 pointer  ${
                         currentIndex === sidePath.label
                           ? "bg-warning"
-                          : "bg-white"
+                          : defaultBackground
                       }`}
                       onClick={() => (
                         fetchDataByRoute(sidePath.routePath),
@@ -377,10 +378,10 @@ function AdminDashboard() {
               </ul>
             </div>
 
-            <div>
+            <div className={`${defaultBackground}`}>
               {/* <div onClick={() => setOpenMenu(!openMenu)}>secondary</div> */}
               <ul
-                className="list-unstyled  "
+                className={`${defaultBackground} list-unstyled  `}
                 // onClick={() => setOpenMenu(!openMenu)}
               >
                 {openMenu &&
@@ -390,8 +391,8 @@ function AdminDashboard() {
                       key={index}
                       className={` ps-2 my-1 p-1 py-1 pointer  ${
                         currentIndex === sidePath.label
-                          ? "bg-warning"
-                          : "bg-white"
+                          ? "bg-warning "
+                          : defaultBackground
                       }`}
                       onClick={() => (
                         fetchDataByRoute(sidePath.routePath),

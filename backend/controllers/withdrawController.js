@@ -67,9 +67,11 @@ exports.createCompleteWithdraw = async (req, res) => {
       reasonId,
       date,
       sellingPrice,
+      isConfirmed,
     } = req.body;
 
     const goodsData = await goods.findById(goodsId);
+
     if (!goodsData) {
       return res.status(400).json({ error: "Goods not found" });
     }
@@ -90,7 +92,7 @@ exports.createCompleteWithdraw = async (req, res) => {
       sellingPrice,
       isPending: true,
       isApproved: true,
-      isConfirmed: true,
+      isConfirmed: isConfirmed,
       returned: false,
       date: date || Date.now(),
     });
@@ -111,14 +113,13 @@ exports.createCompleteWithdraw = async (req, res) => {
 // Approve a withdraw
 exports.approveWithdraw = async (req, res) => {
   const { id } = req.params;
-  console.log(id);
-  console.log(req.body);
+
   try {
     // const { sellerId } = req.body;
 
     const withdrawData = await withdraw.findByIdAndUpdate(
       id,
-      { isApproved: true, sellerId: req.body.sellerId } // Update the state and add sellerId
+      { isApproved: true, sellerId: req.body.sellerId, qty: req.body.qty } // Update the state and add sellerId
       // { isApproved: true, sellerId }, // Update the state and add sellerId
       // { new: true }
     );
@@ -139,8 +140,8 @@ exports.approveWithdraw = async (req, res) => {
 // Confirm a withdraw (subtract quantity from inventory when confirmed)
 exports.confirmWithdraw = async (req, res) => {
   const { id } = req.params;
-  console.log(id);
-  console.log(req.body);
+  // console.log(id);
+  // console.log(req.body);
   try {
     const withdrawData = await withdraw.findById(id);
     if (!withdrawData) {
@@ -179,7 +180,7 @@ exports.confirmWithdraw = async (req, res) => {
 
 // Return goods (increase quantity in inventory for internal use)
 exports.returnGoods = async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   try {
     const { withdrawId, returnedQty, returnedBy, reason } = req.body;
 
@@ -226,7 +227,7 @@ exports.getAllWithdraws = async (req, res) => {
     const withdraws = await withdraw
       .find()
       .populate("customerId", "name email")
-      .populate("goodsId", "name price")
+      .populate("goodsId", "name price description qty photo")
       .populate("sellerId", "name email")
       .populate("reasonId", "name")
       .exec();

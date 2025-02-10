@@ -21,6 +21,7 @@ const WithdrawForm = ({ oldData = null }) => {
     reasonId: "",
     sellingPrice: 0,
     // status: "pending",
+    isConfirmed: true,
   });
 
   const [users, setUsers] = useState([]);

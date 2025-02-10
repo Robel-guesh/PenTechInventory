@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAppContext } from "../../contexts/AppContext";
 import logo from "../../assets/logo.png";
+import { jwtDecode } from "jwt-decode";
 const Login = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -23,12 +24,13 @@ const Login = () => {
     try {
       const res = await axios.post(`${backendUrl}${loginRoute}`, credentials);
       // Assuming the response contains a token that can be used for authentication
-      console.log(res.data.token);
+      // console.log("token", jwtDecode(res.data.token));
       localStorage.removeItem("token");
-      localStorage.removeItem("loggedUser");
+      // localStorage.removeItem("loggedUser");
       localStorage.setItem("token", res.data.token);
       // Assuming res.data.loggedUser contains the user data you want to store
-      localStorage.setItem("loggedUser", JSON.stringify(res.data.loggedUser));
+      // localStorage.setItem("loggedUser", jwtDecode(res.data.token));
+      // JSON.stringify(res.data.loggedUser));
 
       // Set the admin status to true after successful login
       // setAdminStatus(true); // Set isAdmin to true after successful login
@@ -37,6 +39,9 @@ const Login = () => {
       if (res.data.loggedUser.isVerified) {
         navigate("/");
         window.location.reload();
+      }
+      if (!res.data.loggedUser.isVerified) {
+        setError("your account is not verified yet!");
       }
     } catch (err) {
       setError("Invalid credentials");

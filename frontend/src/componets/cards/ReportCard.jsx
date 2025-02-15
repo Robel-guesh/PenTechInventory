@@ -4,7 +4,8 @@ import { useAppContext } from "../../contexts/AppContext";
 import ReportDetail from "./ReportDetail";
 
 function ReportCard() {
-  const { backendUrl, loggedUser, translate } = useAppContext();
+  const { backendUrl, loggedUser, translate, defaultBackground } =
+    useAppContext();
   const [goodsData, setGoodsData] = useState([]);
   const [withdrawData, setWithdrawData] = useState([]);
   const [cardIsOpen, setCardIsOpen] = useState(false);
@@ -75,7 +76,7 @@ function ReportCard() {
       detail: true,
     },
     {
-      header: "Out of Stock",
+      header: "finished Stock",
       qty: handleFilter("outOfStock").filtered.length,
       list: handleFilter("outOfStock").filtered,
       detail: true,
@@ -87,32 +88,32 @@ function ReportCard() {
       detail: true,
     },
     {
-      header: "withdrawn ",
+      header: "stock in office ",
       qty: filterTotalWithdraw("internal use").total,
       list: filterTotalWithdraw("internal use").totalWithdrawnData,
       detail: true,
     },
-    {
-      header: "Sold",
-      qty: filterTotalWithdraw("sale").total,
-      list: filterTotalWithdraw("sale").totalWithdrawnData,
-      detail: true,
-    },
-    {
-      header: "withdrawn as gift",
-      qty: filterTotalWithdraw("gift").total,
-      list: filterTotalWithdraw("gift").totalWithdrawnData,
-      detail: true,
-    },
+    // {
+    //   header: "Sold",
+    //   qty: filterTotalWithdraw("sale").total,
+    //   list: filterTotalWithdraw("sale").totalWithdrawnData,
+    //   detail: true,
+    // },
+    // {
+    //   header: "withdrawn as gift",
+    //   qty: filterTotalWithdraw("gift").total,
+    //   list: filterTotalWithdraw("gift").totalWithdrawnData,
+    //   detail: true,
+    // },
   ];
   return (
-    <div className="p-2 ">
+    <div className={`${defaultBackground} p-2`} style={{ minHeight: "88vh" }}>
       <div className=" d-flex flex-wrap justify-content-center gap-4">
         {cardList &&
           cardList.map((items, index) => (
             <div
               key={items.header}
-              className=" rounded-2  shadow-sm report-card overflow-hidden"
+              className=" rounded-2 border-2 border-warning shadow-sm report-card overflow-hidden"
             >
               <div
                 className="d-flex justify-content-center align-items-center w-100 fw-bold fs-5 bg-warning  text-center p-2"

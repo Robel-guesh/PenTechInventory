@@ -158,16 +158,16 @@ const WithdrawForm = ({ oldData = null }) => {
   }
 
   return (
-    <div className="d-flex justify-content-center align-items-center w-100 mt-2">
-      <div>
-        <h2 className="text-center">{translate("withdraw")}</h2>
+    <div className="d-flex justify-content-center align-items-center    w-100">
+      <div className="w-100 ">
+        <h3 className="text-center ">{translate("sale")}</h3>
         <form
-          className="d-flex  flex-wrap p-2  justify-content-center"
+          className="d-flex w-100 flex-wrap px-2   justify-content-center"
           onSubmit={handleSubmit}
         >
-          <div className="form-containers">
+          <div className=" form-containers">
             <div className="form-group mb-1">
-              <label className="my-2">{translate("Reason")}</label>
+              <label className="mb-1">{translate("Reason")}</label>
               <select
                 name="reasonId"
                 className="form-control"
@@ -247,9 +247,9 @@ const WithdrawForm = ({ oldData = null }) => {
               </select>
             </div>
             <div>
-              <label className="my-2 ">{price} birr</label>
+              <label className="my-1 ">{price} birr</label>
               <div className="form-group mb-1">
-                <label className="my-2">{translate("Price")}</label>
+                <label className="my-1">{translate("Price")}</label>
                 <input
                   // type="text"
                   type="number"

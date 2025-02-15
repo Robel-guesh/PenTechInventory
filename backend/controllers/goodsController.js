@@ -91,9 +91,21 @@ exports.getGoodById = async (req, res) => {
 
 // Update a good by ID
 exports.updateGood = async (req, res) => {
-  const photo = req.files ? req.files.map((file) => file.path) : [];
-  console.log(req.body);
   try {
+    // Fetch the existing good data
+    const existingGood = await goods.findById(req.params.id);
+
+    if (!existingGood) {
+      return res.status(404).json({ message: "Good not found" });
+    }
+
+    // Determine the photo to be used
+    const photo =
+      req.files && req.files.length > 0
+        ? req.files.map((file) => file.path)
+        : existingGood.photo;
+
+    // Update the good data
     const goodData = await goods.findByIdAndUpdate(
       req.params.id,
       {
@@ -102,16 +114,12 @@ exports.updateGood = async (req, res) => {
         catagoryId: req.body.catagoryId,
         unitOfMeasureId: req.body.unitOfMeasureId,
         qty: req.body.qty,
-        photo: photo,
+        photo: photo, // Use the new photo if provided, otherwise keep the old one
         description: req.body.description,
         shortageLevel: req.body.shortageLevel,
       },
       { new: true }
     );
-
-    if (!goodData) {
-      return res.status(404).json({ message: "Good not found" });
-    }
 
     res
       .status(200)

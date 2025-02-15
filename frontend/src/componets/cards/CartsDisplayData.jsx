@@ -5,7 +5,7 @@ import axios from "axios";
 function CartsDisplayData({ cardData, onClose, onFilter }) {
   const [cartCount, setCartCount] = useState(0);
   const [withdrawStatus, setWithdrawStatus] = useState("pending");
-  const { translate, backendUrl, loggedUser, defaultBackground } =
+  const { translate, backendUrl, loggedUser, defaultBackground, setTotalCart } =
     useAppContext();
   const [reason, setReason] = useState([]);
   useEffect(() => {
@@ -36,7 +36,7 @@ function CartsDisplayData({ cardData, onClose, onFilter }) {
   };
   const filterReason = () => {
     const item = reason.find((data) => data.name === "internal use");
-    console.log(item);
+    // console.log(item);
     if (item) {
       return item._id;
     }
@@ -57,6 +57,7 @@ function CartsDisplayData({ cardData, onClose, onFilter }) {
         sellingPrice: cardData.unitPrice,
         date: new Date(),
       };
+      // setTotalCart(cardData.length);
 
       // Make a request to create the withdraw request with isPending: true
       const response = await axios.post(

@@ -86,6 +86,9 @@ function DisplayData() {
     }
   };
   useEffect(() => {
+    setTotalCart(cartData.length);
+  }, [cartData]);
+  useEffect(() => {
     // Apply filter only after data is fetched
     applyFilter();
     setTotalPending(handleOrderFilter("isPending").length);
@@ -164,7 +167,7 @@ function DisplayData() {
     setCartData(newCartData);
     fetchWithdrawData();
     applyFilter();
-    setTotalCart(newCartData.length);
+    // setTotalCart(newCartData.length);
   };
 
   const fetchQuantityAndShortageLevel = (goodsId) => {
@@ -242,9 +245,9 @@ function DisplayData() {
 
   // console.log(totalreturned);
   const handleCloseCartItem = (itemToRemove) => {
-    setCartData((prevCartData) =>
-      prevCartData.filter((item) => item._id !== itemToRemove._id)
-    );
+    const filteredCartData = (prevCartData) =>
+      prevCartData.filter((item) => item._id !== itemToRemove._id);
+    setCartData(filteredCartData);
   };
   return (
     <div>
@@ -298,14 +301,14 @@ function DisplayData() {
           <span className="bi bi-search fs-5"></span>
         </div>
 
-        <div className="m-2 goods-main-container  ">
+        <div className="m-2 goods-main-container   w-100 p-2">
           {/* {withdrawData &&
             withdrawData.map((datas, index) => ( */}
           {orderSearchedData &&
             orderSearchedData.map((datas, index) => (
               <div
                 key={index}
-                className="order-card shadow-lg
+                className=" shadow-sm  card-container
                 
                 
                 "
@@ -443,6 +446,7 @@ function DisplayData() {
               <GoodsDisplayCard
                 cardData={datas}
                 handleAddToCart={handleAddToCart}
+                onFilter={fetchWithdrawData}
                 quantityDatas={fetchQuantityAndShortageLevel(datas._id)}
               ></GoodsDisplayCard>
             </div>

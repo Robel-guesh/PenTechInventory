@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/logo.jpg";
 import profile_photo from "../../assets/profilePhoto.png";
 import { useAppContext } from "../../contexts/AppContext";
 import { useNavigate } from "react-router-dom";
@@ -27,11 +27,10 @@ function NavBar() {
   const [openProfile, setOpenProfile] = useState(false);
   return (
     <div
-      className={`d-flex justify-content-between gap-2 align-items-center  flex-wrap shadow-sm  position-fixed w-100  ${
+      className={`d-flex justify-content-around gap-1 align-items-center  flex-wrap shadow-sm w-100  ${
         // darkMode ? defaultBackground : "bg-green"
         defaultBackground
       } `}
-      style={{ zIndex: "1000" }}
     >
       <div className="company-logo">
         <img src={logo} alt="" />
@@ -48,7 +47,9 @@ function NavBar() {
             ></span>
           </div>
         )}
-        {loggedUser.isAdmin && (
+        {(loggedUser.isAdmin ||
+          loggedUser?.roleName?.name.toLowerCase() ===
+            "supper Admin".toLowerCase()) && (
           <div onClick={() => navigate("/admindashboard")}>
             <span
               className={
@@ -59,7 +60,10 @@ function NavBar() {
             ></span>
           </div>
         )}
-        {loggedUser.isAdmin && (
+        {(loggedUser?.roleName?.name.toLowerCase() === "store manager" ||
+          loggedUser?.roleName?.name.toLowerCase() ===
+            "supper Admin".toLowerCase() ||
+          loggedUser.isAdmin) && (
           <div onClick={() => navigate("/report")}>
             <span
               className={
@@ -70,7 +74,10 @@ function NavBar() {
             ></span>
           </div>
         )}
-        {loggedUser.isAdmin && (
+        {(loggedUser?.roleName?.name.toLowerCase() === "store keeper" ||
+          loggedUser?.roleName?.name.toLowerCase() ===
+            "supper Admin".toLowerCase() ||
+          loggedUser.isAdmin) && (
           <div onClick={() => navigate("/withdraw")}>
             <span
               className={

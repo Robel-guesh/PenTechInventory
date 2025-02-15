@@ -56,7 +56,7 @@ const UserForm = ({ oldData, onSave }) => {
       });
     }
   }, [backendUrl, oldData]);
-  console.log(user);
+  // console.log(user);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
@@ -265,12 +265,12 @@ const UserForm = ({ oldData, onSave }) => {
                   onChange={handleChange}
                   required
                 />
-                <span
+                {/* <span
                   className="w-25 btn btn-secondary fw-bolder"
                   onClick={generateUserId}
                 >
                   {translate("ID")}
-                </span>
+                </span> */}
               </div>
             </div>
           )}

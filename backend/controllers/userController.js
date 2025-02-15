@@ -19,7 +19,7 @@ exports.createUser = async (req, res) => {
       email: req.body.email,
       password: req.body.password, // In a real-world scenario, you'd hash the password
       photo: photo,
-      roleId: req.body.roleId,
+      roleId: req.body.roleId || "67a5d5d1e875b0f18ffa8ff0",
     });
 
     await userData.save();

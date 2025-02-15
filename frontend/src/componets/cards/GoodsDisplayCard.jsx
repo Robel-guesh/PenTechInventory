@@ -1,13 +1,89 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppContext } from "../../contexts/AppContext";
+import axios from "axios";
 
-function GoodsDisplayCard({ cardData, handleAddToCart, quantityDatas }) {
+function GoodsDisplayCard({
+  cardData,
+  handleAddToCart,
+  quantityDatas,
+  onFilter,
+}) {
   const [count, setCount] = useState(0);
+  const [priceData, setPriceData] = useState([]);
   const { translate, backendUrl, loggedUser, defaultBackground } =
     useAppContext();
 
   const Birr = "Birr";
+  const [reason, setReason] = useState([]);
+  useEffect(() => {
+    const fetchReason = async () => {
+      try {
+        // Admin approves a pending withdrawal request by updating status to 'approved'
+        const response = await axios.get(`${backendUrl}/reason`);
 
+        // Update the status to approved for UI
+        setReason(response.data.data);
+      } catch (error) {
+        console.error("Error getting data", error);
+      }
+    };
+    const fetchPrice = async () => {
+      try {
+        // Admin approves a pending withdrawal request by updating status to 'approved'
+        const response = await axios.get(`${backendUrl}/purchase`);
+
+        // Update the status to approved for UI
+        setPriceData(response.data.data);
+      } catch (error) {
+        console.error("Error getting data", error);
+      }
+    };
+    fetchReason();
+    fetchPrice();
+  }, [backendUrl]);
+
+  const returnPrice = (id) => {
+    const filteredPrice = priceData.find((item) => {
+      return item.id._id === id;
+    });
+
+    return filteredPrice?.sellingPrice;
+  };
+
+  const filterReason = () => {
+    const item = reason.find((data) => data.name === "internal use");
+    // console.log(item);
+    if (item) {
+      return item._id;
+    }
+  };
+  // Handle creating the withdraw request (for the user)
+  const handleSaveOrder = async () => {
+    if (count <= 0) return;
+
+    try {
+      const withdrawData = {
+        customerName: loggedUser.name,
+        customerId: loggedUser._id,
+        goodsId: cardData?._id,
+        sellerId: loggedUser._id,
+        qty: count,
+        reasonId: filterReason(),
+        status: "pending",
+        sellingPrice: returnPrice(cardData?._id),
+        date: new Date(),
+      };
+
+      const response = await axios.post(
+        `${backendUrl}/withdraw/create`,
+        withdrawData
+      );
+      alert(response?.data?.message);
+      onFilter();
+    } catch (error) {
+      console.error("Error creating withdraw:", error.message);
+    }
+  };
   const handleCount = (operator, maxAmount) => {
     // Instead of directly modifying `newCount`, we properly use `setCount`
 
@@ -118,8 +194,8 @@ function GoodsDisplayCard({ cardData, handleAddToCart, quantityDatas }) {
       {/* <div className="w-100 text-center ">{cardData.id?.description}</div> */}
       <div className="w-100 text-center ">{cardData.description}</div>
 
-      <div className="my-2 pointer w-100 d-flex justify-content-center">
-        <span
+      <div className="my-2 pointer w-100 d-flex justify-content-center gap-2 align-items-center">
+        {/* <span
           className="bg-warning text-dark fw-bolder p-1 px-3 rounded-2 cursor-pointer  "
           onClick={() =>
             count > 0 &&
@@ -142,7 +218,16 @@ function GoodsDisplayCard({ cardData, handleAddToCart, quantityDatas }) {
             })
           }
         >
-          {translate("add to cart")}
+          {/* <span className="bi bi-cart pe-1"></span> */}
+        {/* {translate("Add Item")} */}
+        {/* Add Item */}
+        {/* </span> */}
+
+        <span
+          className="bg-primary text-white fw-bolder p-1 px-3 rounded-2 cursor-pointer  "
+          onClick={handleSaveOrder}
+        >
+          {translate("order")}
         </span>
       </div>
     </div>

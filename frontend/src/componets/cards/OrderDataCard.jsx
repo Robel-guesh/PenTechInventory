@@ -164,17 +164,33 @@ function OrderDataCard({
     };
     transfer();
   };
+  const handleWithdrawDelete = async () => {
+    const permission = window.confirm(
+      "are you sure you want to delete your order"
+    );
+    if (permission) {
+      try {
+        const response = await axios.delete(
+          `${backendUrl}/withdraw/${fullWithdrawData._id}`
+        );
+        console.log(response?.data?.message);
+        onFilter();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
   const handleModalClose = () => setShowModal(false);
 
   const handleModalOpen = () => {
     setShowModal(true);
   };
   return (
-    <div className={`d-flex flex-wrap card-container w-100`}>
-      <div className=" p-2 w-100 justify-content-center  ">
+    <div className={`d-flex flex-wrap w-100`}>
+      <div className=" p-2 w-100 justify-content-center   ">
         <div className="d-flex w-100 justify-content-between gap-1 ">
           <div className="d-flex justify-content-between gap-2  p-2   w-100">
-            <div className="d-flex">
+            <div className="d-flex flex-wrap">
               <div>
                 {photoData ? (
                   <img
@@ -252,7 +268,7 @@ function OrderDataCard({
             </div>
           </div>
         )}
-        <div className="d-flex gap-1 justify-content-between">
+        <div className="d-flex gap-1 justify-content-center align-items-center ">
           {!fullWithdrawData.isApproved &&
             (loggedUser.isAdmin ||
               loggedUser.roleName.name.toLowerCase() === "supper admin" ||
@@ -293,7 +309,9 @@ function OrderDataCard({
             )}
           {fullWithdrawData.isConfirmed &&
             !fullWithdrawData.returned &&
-            (loggedUser.isAdmin || loggedUser.roleName === "store manager") && (
+            (loggedUser.isAdmin ||
+              loggedUser?.roleName?.name?.toLowerCase() ===
+                "store manager") && (
               <div className="gap-1">
                 <span
                   className="bg-primary  text-white pointer  p-1 px-3 rounded-2 cursor-pointer"
@@ -303,6 +321,56 @@ function OrderDataCard({
                 </span>
               </div>
             )}
+          {fullWithdrawData.isPending &&
+            !fullWithdrawData.isApproved &&
+            !fullWithdrawData.isConfirmed &&
+            !fullWithdrawData.returned &&
+            (loggedUser.isAdmin ||
+              loggedUser._id === fullWithdrawData.customerId._id) && (
+              <div className="gap-1 ">
+                <span
+                  className="bi bi-x bg-danger text-white pointer     fs-4 rounded-2 cursor-pointer"
+                  onClick={handleWithdrawDelete}
+                ></span>
+              </div>
+            )}
+
+          {fullWithdrawData.isPending &&
+            fullWithdrawData.isApproved &&
+            !fullWithdrawData.isConfirmed &&
+            !fullWithdrawData.returned &&
+            (loggedUser.isAdmin ||
+              loggedUser?.roleName?.name?.toLowerCase() ===
+                "store manager") && (
+              <div className="gap-1 ">
+                <span
+                  className="bi bi-x bg-danger text-white pointer     fs-4 rounded-2 cursor-pointer"
+                  onClick={handleWithdrawDelete}
+                ></span>
+              </div>
+            )}
+          {fullWithdrawData.isPending &&
+            fullWithdrawData.isApproved &&
+            fullWithdrawData.isConfirmed &&
+            !fullWithdrawData.returned &&
+            (loggedUser.isAdmin ||
+              loggedUser?.roleName?.name?.toLowerCase() ===
+                "store manager") && (
+              <div className="gap-1 ">
+                <span
+                  className="bi bi-x bg-danger text-white pointer     fs-4 rounded-2 cursor-pointer"
+                  onClick={handleWithdrawDelete}
+                ></span>
+              </div>
+            )}
+          {fullWithdrawData.returned && loggedUser.isAdmin && (
+            <div className="gap-1 ">
+              <span
+                className="bi bi-x bg-danger text-white pointer     fs-4 rounded-2 cursor-pointer"
+                onClick={handleWithdrawDelete}
+              ></span>
+            </div>
+          )}
         </div>
       </div>
       <Modal show={showModal} onHide={handleModalClose}>
@@ -318,9 +386,7 @@ function OrderDataCard({
               name="user"
               className="form-control mb-3"
               value={user}
-              onChange={(e) => {
-                setUser(e.target.value), console.log(e.target.value);
-              }}
+              onChange={(e) => setUser(e.target.value)}
               // required
             >
               {usersList?.map((userinfo) => (

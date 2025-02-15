@@ -6,7 +6,7 @@ const ReturnedGoods = require("../models/returnedGoods");
 
 // Create a new withdraw (for internal/external use)
 exports.createWithdraw = async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   try {
     const {
       customerName,
@@ -46,13 +46,13 @@ exports.createWithdraw = async (req, res) => {
 
     // Save the withdrawal data
     await withdrawData.save();
-
+    // socket.emit("withdrawCreated", withdrawData);
     res.status(201).json({
-      message: "Withdraw created successfully",
+      message: "order created successfully",
       data: withdrawData,
     });
   } catch (error) {
-    res.status(500).json({ error: "Server error while creating withdraw" });
+    res.status(500).json({ error: "Server error while creating order" });
   }
 };
 exports.createCompleteWithdraw = async (req, res) => {
@@ -101,12 +101,13 @@ exports.createCompleteWithdraw = async (req, res) => {
     await withdrawData.save();
     goodsData.qty = Number(goodsData.qty) - Number(withdrawData.qty); // Subtract the withdrawn quantity from stock
     await goodsData.save();
+    // socket.emit("completeWithdrawCreated", withdrawData);
     res.status(201).json({
-      message: "Withdraw created successfully",
+      message: "order created successfully",
       data: withdrawData,
     });
   } catch (error) {
-    res.status(500).json({ error: "Server error while creating withdraw" });
+    res.status(500).json({ error: "Server error while creating order" });
   }
 };
 
@@ -125,15 +126,15 @@ exports.approveWithdraw = async (req, res) => {
     );
 
     if (!withdrawData) {
-      return res.status(404).json({ message: "Withdraw not found" });
+      return res.status(404).json({ message: "order not found" });
     }
-
+    // socket.emit("withdrawApproved", withdrawData);
     res.status(200).json({
-      message: "Withdraw approved successfully",
+      message: "order approved successfully",
       data: withdrawData,
     });
   } catch (error) {
-    res.status(500).json({ error: "Error approving withdraw" });
+    res.status(500).json({ error: "Error approving order" });
   }
 };
 
@@ -145,11 +146,11 @@ exports.confirmWithdraw = async (req, res) => {
   try {
     const withdrawData = await withdraw.findById(id);
     if (!withdrawData) {
-      return res.status(404).json({ message: "Withdraw not found" });
+      return res.status(404).json({ message: "order not found" });
     }
 
     if (withdrawData.isConfirmed) {
-      return res.status(400).json({ message: "Withdraw already confirmed" });
+      return res.status(400).json({ message: "order already confirmed" });
     }
 
     // Mark the withdraw as confirmed
@@ -168,13 +169,13 @@ exports.confirmWithdraw = async (req, res) => {
 
     goodsData.qty = Number(goodsData.qty) - Number(withdrawData.qty); // Subtract the withdrawn quantity from stock
     await goodsData.save();
-
+    // socket.emit("withdrawConfirmed", withdrawData);
     res.status(200).json({
-      message: "Withdraw confirmed successfully",
+      message: "order confirmed successfully",
       data: withdrawData,
     });
   } catch (error) {
-    res.status(500).json({ error: "Error confirming withdraw" });
+    res.status(500).json({ error: "Error confirming order" });
   }
 };
 
@@ -186,10 +187,10 @@ exports.returnGoods = async (req, res) => {
 
     const withdrawData = await withdraw.findById(withdrawId);
     if (!withdrawData) {
-      return res.status(404).json({ message: "Withdraw not found" });
+      return res.status(404).json({ message: "order not found" });
     }
     if (withdrawData.returned) {
-      return res.status(400).json({ message: "Withdraw already returned" });
+      return res.status(400).json({ message: "order already returned" });
     }
     withdrawData.returned = true;
     await withdrawData.save();
@@ -202,7 +203,7 @@ exports.returnGoods = async (req, res) => {
     });
 
     await returnedGoodsData.save();
-
+    // socket.emit("goodsReturned", withdrawData);
     // Update the goods inventory (increase the qty for returned goods)
     const goodsData = await goods.findById(withdrawData.goodsId);
     if (!goodsData) {
@@ -233,7 +234,7 @@ exports.getAllWithdraws = async (req, res) => {
       .exec();
     res.status(200).json({ data: withdraws });
   } catch (error) {
-    res.status(500).json({ error: "Error retrieving withdraws" });
+    res.status(500).json({ error: "Error retrieving order" });
   }
 };
 
@@ -249,29 +250,37 @@ exports.getWithdrawById = async (req, res) => {
       .exec();
 
     if (!withdrawData) {
-      return res.status(404).json({ message: "Withdraw not found" });
+      return res.status(404).json({ message: "order not found" });
     }
     res.status(200).json({ data: withdrawData });
   } catch (error) {
-    res.status(500).json({ error: "Error retrieving the withdraw" });
+    res.status(500).json({ error: "Error retrieving the order" });
   }
 };
 
 // Delete a withdraw by ID
 exports.deleteWithdraw = async (req, res) => {
+  console.log(req.params);
   try {
     const withdrawData = await withdraw.findByIdAndDelete(req.params.id);
 
     if (!withdrawData) {
-      return res.status(404).json({ message: "Withdraw not found" });
+      return res.status(404).json({ message: "order not found" });
     }
     const goodsData = await goods.findById(withdrawData.goodsId._id);
-    if (goodsData && withdrawData.isConfirmed) {
+    // socket.emit("goodsDeleted", withdrawData);
+    if (
+      goodsData &&
+      withdrawData.isConfirmed &&
+      withdrawData.isApproved &&
+      withdrawData.isPending &&
+      !withdrawData.returned
+    ) {
       goodsData.qty = Number(goodsData.qty) + Number(withdrawData.qty); // Add the returned quantity to the stock
       await goodsData.save();
     }
-    res.status(200).json({ message: "Withdraw deleted successfully" });
+    res.status(200).json({ message: "order deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Error deleting withdraw" });
+    res.status(500).json({ error: "Error deleting order" });
   }
 };

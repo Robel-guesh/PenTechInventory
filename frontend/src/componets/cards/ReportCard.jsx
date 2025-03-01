@@ -76,7 +76,7 @@ function ReportCard() {
       detail: true,
     },
     {
-      header: "finished Stock",
+      header: "out Of Stock",
       qty: handleFilter("outOfStock").filtered.length,
       list: handleFilter("outOfStock").filtered,
       detail: true,

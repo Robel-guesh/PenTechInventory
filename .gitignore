@@ -5,11 +5,16 @@ backend/node_modules/
 # Ignore build directories
 frontend/build/
 backend/build/
-
+frontend/.env
+frontend/.env.production
+fontend/.env.development
 # Ignore logs
 npm-debug.log
 yarn-debug.log
 
+
+backend/.env.production
+backend/.env.development
 # IDE/editor config
 .vscode/
 .idea/

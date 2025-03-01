@@ -33,7 +33,7 @@ function ReportDetail({ items, qty, detail }) {
       >
         {detail &&
           qty > 0 &&
-          translate(cardIsOpen ? "hide details" : " see details")}
+          translate(cardIsOpen ? "see less" : " see details")}
       </div>
 
       {cardIsOpen && (

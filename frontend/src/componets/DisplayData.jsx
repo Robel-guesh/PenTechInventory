@@ -319,6 +319,7 @@ function DisplayData() {
                   goodsId={datas.goodsId}
                   max={datas.goodsId.qty}
                   fullWithdrawData={datas}
+                  photo={datas?.goodsId?.photo[0]}
                   description={datas?.goodsId?.description}
                   userId={loggedUser}
                   customersPhoto={filterPhoto(datas?.customerId?._id)}

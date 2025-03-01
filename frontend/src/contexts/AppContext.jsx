@@ -28,8 +28,9 @@ export const AppProvider = ({ children }) => {
   };
 
   const translationData = {
-    "ADD TO CART": { eng: "add to cart", tig: "ናብ ሳፅን ኣእቱ" },
+    // "ADD TO CART": { eng: "order", tig: "ኣዝዝ " },
     ORDER: { eng: "order", tig: "ኣዝዝ" },
+    "finished Stock": { eng: "finished stock", tig: "ዝተወደአ" },
   };
   const [translation, setTranslation] = useState(translationData);
   // const translationRoute = "/translations";

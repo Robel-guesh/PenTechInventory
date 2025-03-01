@@ -353,7 +353,7 @@ function AdminDashboard() {
             <div className={`${defaultBackground}`}>
               <ul
                 className={`${defaultBackground} list-unstyled  `}
-                onClick={() => setOpenMenu(!openMenu)}
+                // onClick={() => setOpenMenu(!openMenu)}
               >
                 {openMenu &&
                   sideBarPaths[0] &&
@@ -396,8 +396,8 @@ function AdminDashboard() {
                       }`}
                       onClick={() => (
                         fetchDataByRoute(sidePath.routePath),
-                        setCurrentIndex(sidePath.label),
-                        setOpenMenu(!openMenu)
+                        setCurrentIndex(sidePath.label)
+                        // setOpenMenu(!openMenu)
                       )}
                       // style={{ backgroundColor: "rgba(0,0,0,0.1)" }}
                     >

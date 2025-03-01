@@ -93,14 +93,14 @@ function NavBar() {
         className="d-flex gap-1 text-white  align-items-center"
         style={{ cursor: "pointer" }}
       >
-        {loggedUser && (
+        {/* {loggedUser && (
           <div className={`${defaultBackground}  p-2 `}>
             <span
               className={`${defaultBackground}  bi bi-cart fw-bolder`}
             ></span>
             <small>{totalCart}</small>
           </div>
-        )}
+        )} */}
         <div
           className={darkMode ? "text-warning mx-1" : "text-black mx-1"}
           onClick={() => toggleLanguage()}
@@ -129,11 +129,12 @@ function NavBar() {
                 alt="profile"
               />
             </div>
+            <div className={defaultBackground}>{loggedUser.name}</div>
             {openProfile && (
               <div
                 className={`settings ${darkMode ? "bg-dark" : "bg-light"}   `}
               >
-                <div
+                {/* <div
                   className={`border-bottom border-1 border-warning w-100 py-2 ${
                     darkMode ? "text-white" : "text-dark"
                   }`}
@@ -145,7 +146,7 @@ function NavBar() {
                     }`}
                   ></span>
                   <span className="my-2">{translate("edit Profile")}</span>
-                </div>
+                </div> */}
                 {loggedUser && (
                   <div
                     onClick={handleLogOut}

@@ -8,6 +8,7 @@ function OrderDataCard({
   name,
   qty,
   goodsId,
+  photo,
   fullWithdrawData,
   onFilter,
   customersPhoto,
@@ -15,7 +16,10 @@ function OrderDataCard({
   userId,
   max,
 }) {
-  const [photoData, setPhotoData] = useState(fullWithdrawData.goodsId);
+  const [photoData, setPhotoData] =
+    useState();
+    // fullWithdrawData?.goodsId?.photo[0]
+    // photo
   const [orderCount, setOrderCount] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [user, setUser] = useState("");
@@ -27,6 +31,7 @@ function OrderDataCard({
     // axios.get(`${backendUrl}${"/goods"}/${goodsId._id}`).then((response) => {
     //   setPhotoData(response.data.data);
     // });
+    setPhotoData(photo);
     axios.get(`${backendUrl}${"/user"}`).then((response) => {
       // setUsersList(response?.data?.data);
       setUsersList(
@@ -185,6 +190,11 @@ function OrderDataCard({
   const handleModalOpen = () => {
     setShowModal(true);
   };
+  console.log(
+    "photo",
+    fullWithdrawData?.goodsId?.photo[0],
+    fullWithdrawData?.goodsId?.name
+  );
   return (
     <div className={`d-flex flex-wrap w-100`}>
       <div className=" p-2 w-100 justify-content-center   ">
@@ -196,7 +206,7 @@ function OrderDataCard({
                   <img
                     className="me-2"
                     style={{ height: "60px", width: "auto" }}
-                    src={`${backendUrl}/${photoData.photo[0]}`}
+                    src={`${backendUrl}/${photoData}`}
                     alt="orders"
                   ></img>
                 ) : (

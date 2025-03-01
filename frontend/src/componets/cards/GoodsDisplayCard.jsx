@@ -116,7 +116,7 @@ function GoodsDisplayCard({
             </div>
             {/* <div>{cardData.qty && cardData.qty}</div> */}
             {/* {loggedUser.isAdmin && ( */}
-            <div>
+            {/* <div>
               <div>{cardData?.qty && cardData.qty} </div>
               {cardData?.qty <= 0 ? (
                 <span className="text-danger fw-bold">Out of Stock</span>
@@ -125,7 +125,7 @@ function GoodsDisplayCard({
               ) : cardData?.qty > cardData?.shortageLevel ? (
                 <span className="text-success fw-bold">In Stock</span>
               ) : null}
-            </div>
+            </div> */}
             {/* <div>
               <div>{quantityDatas?.qty && quantityDatas.qty} </div>
               {quantityDatas?.qty <= 0 ? (
@@ -138,13 +138,13 @@ function GoodsDisplayCard({
             </div> */}
             {/* // )} */}
 
-            <div>
+            {/* <div>
               <span className="d-flex">
                 {quantityDatas.sellingPrice
                   ? `${quantityDatas.sellingPrice} ${translate("birr")}`
                   : null}
               </span>
-            </div>
+            </div> */}
             {/* <div>
               <span className="d-flex">
                 {cardData.sellingPrice

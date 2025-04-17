@@ -9,6 +9,11 @@ exports.createUser = async (req, res) => {
   // if( fetchedUser){
   //   return
   // }
+  let hashedPassword = req.body.password; // Retain the old password if not updating it
+  if (req.body.password) {
+    const salt = await bcrypt.genSalt(10);
+    hashedPassword = await bcrypt.hash(req.body.password, salt);
+  }
   try {
     const userData = new user({
       isAdmin: req.body.isAdmin,
@@ -17,9 +22,9 @@ exports.createUser = async (req, res) => {
       sex: req.body.sex,
       id: req.body.id,
       email: req.body.email,
-      password: req.body.password, // In a real-world scenario, you'd hash the password
+      password: hashedPassword,
       photo: photo,
-      roleId: req.body.roleId || "67a5d5d1e875b0f18ffa8ff0",
+      roleId: req.body.roleId,
     });
 
     await userData.save();

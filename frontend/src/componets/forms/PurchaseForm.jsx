@@ -118,6 +118,7 @@ const PurchaseForm = ({ oldData = null, onSave }) => {
       }
 
       alert(response.data?.message);
+      console.log(response.data);
       setPurchase({
         id: "",
         qty: 0,
@@ -131,8 +132,12 @@ const PurchaseForm = ({ oldData = null, onSave }) => {
       });
     } catch (error) {
       alert(error.response?.data?.message || error.message);
+      console.log(error.response?.data);
     }
-    onSave();
+    // onSave();
+    if (onSave && typeof onSave === "function") {
+      onSave();
+    }
   };
 
   if (loading) {

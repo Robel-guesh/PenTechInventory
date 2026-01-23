@@ -16,7 +16,15 @@ export const AppProvider = ({ children }) => {
   // const [currentLanguage, setCurrentLanguage] = useState("eng");
   const [backendUrl, setBackendUrl] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+  // const mockSuperAdmin = {
+  //   name: "Dev Super Admin",
+  //   isAdmin: true,
+  //   roleName: { name: "supper Admin" },
+  //   photo: ["default.png"]
+  // };
+  // const [loggedUser, setLoggedUser] = useState(mockSuperAdmin);
   const [loggedUser, setLoggedUser] = useState("");
+
   const [token, setToken] = useState("");
   const companyName = "PTSC";
   const catagoryList = {

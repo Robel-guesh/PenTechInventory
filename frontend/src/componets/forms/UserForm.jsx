@@ -12,9 +12,10 @@ const UserForm = ({ oldData, onSave }) => {
   const [totalUsers, setTotalUsers] = useState(0);
   const [user, setUser] = useState({
     name: "",
-    sex: "",
+    sex: "male",
     id: "",
     email: "",
+    phone: "",
     password: "",
     photo: [],
     roleId: "",
@@ -39,6 +40,7 @@ const UserForm = ({ oldData, onSave }) => {
         sex: oldData.sex,
         id: oldData.id,
         email: oldData.email,
+        phone: oldData.phone || "",
         password: "", // In case the password shouldn't be pre-filled
         photo: oldData.photo, // Assuming we don't need to pre-load photos on update
         roleId: oldData.roleId,
@@ -74,13 +76,14 @@ const UserForm = ({ oldData, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(user);
+    // console.log(user);
     try {
       const formData = new FormData();
       formData.append("name", user.name);
       formData.append("sex", user.sex);
       formData.append("id", user.id);
       formData.append("email", user.email);
+      formData.append("phone", user.phone);
       formData.append("password", user.password);
       formData.append("isAdmin", user.isAdmin);
       formData.append("isVerified", user.isVerified);
@@ -131,7 +134,7 @@ const UserForm = ({ oldData, onSave }) => {
   return (
     <div
       className="d-flex justify-content-center align-items-center w-100"
-      // style={{ minHeight: "80vh" }}
+    // style={{ minHeight: "80vh" }}
     >
       {/* <div className="login-form "> */}
       <div className="login-form d-flex flex-column justify-content-center h-100 gap-4  ">
@@ -196,9 +199,22 @@ const UserForm = ({ oldData, onSave }) => {
               className="form-control"
               value={user.email}
               onChange={handleChange}
+            // required
+            />
+          </div>
+          <div className="form-group mb-1">
+            <label className="my-2">{translate("Phone Number")}</label>
+            <input
+              type="tel"
+              name="phone"
+              className="form-control"
+              value={user.phone}
+              onChange={handleChange}
+              placeholder="09xxxxxxxx"
               required
             />
           </div>
+
 
           {/* Password */}
           <div className="form-group mb-1">

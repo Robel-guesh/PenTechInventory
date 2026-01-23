@@ -16,7 +16,10 @@ function NavBar() {
     totalCart,
   } = useAppContext();
 
+
   const navigate = useNavigate();
+
+
   const handleLogOut = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("loggedUser");
@@ -30,7 +33,7 @@ function NavBar() {
       className={`d-flex justify-content-around gap-1 align-items-center  flex-wrap shadow-sm w-100  ${
         // darkMode ? defaultBackground : "bg-green"
         defaultBackground
-      } `}
+        } `}
     >
       <div className="company-logo">
         <img src={logo} alt="" />
@@ -47,47 +50,47 @@ function NavBar() {
             ></span>
           </div>
         )}
-        {(loggedUser.isAdmin ||
+        {(loggedUser?.isAdmin ||
           loggedUser?.roleName?.name.toLowerCase() ===
-            "supper Admin".toLowerCase()) && (
-          <div onClick={() => navigate("/admindashboard")}>
-            <span
-              className={
-                darkMode
-                  ? "text-white bi bi-grid mx-1 fw-bold fs-6 pointer"
-                  : "text-black bi bi-grid mx-1 fw-bold fs-6 pointer"
-              }
-            ></span>
-          </div>
-        )}
+          "supper Admin".toLowerCase()) && (
+            <div onClick={() => navigate("/admindashboard")}>
+              <span
+                className={
+                  darkMode
+                    ? "text-white bi bi-grid mx-1 fw-bold fs-6 pointer"
+                    : "text-black bi bi-grid mx-1 fw-bold fs-6 pointer"
+                }
+              ></span>
+            </div>
+          )}
         {(loggedUser?.roleName?.name.toLowerCase() === "store manager" ||
           loggedUser?.roleName?.name.toLowerCase() ===
-            "supper Admin".toLowerCase() ||
-          loggedUser.isAdmin) && (
-          <div onClick={() => navigate("/report")}>
-            <span
-              className={
-                darkMode
-                  ? "text-white bi bi-graph-up mx-1 fw-bold fs-6 pointer"
-                  : "text-black bi bi-graph-up mx-1 fw-bold fs-6 pointer"
-              }
-            ></span>
-          </div>
-        )}
+          "supper Admin".toLowerCase() ||
+          loggedUser?.isAdmin) && (
+            <div onClick={() => navigate("/report")}>
+              <span
+                className={
+                  darkMode
+                    ? "text-white bi bi-graph-up mx-1 fw-bold fs-6 pointer"
+                    : "text-black bi bi-graph-up mx-1 fw-bold fs-6 pointer"
+                }
+              ></span>
+            </div>
+          )}
         {(loggedUser?.roleName?.name.toLowerCase() === "store keeper" ||
           loggedUser?.roleName?.name.toLowerCase() ===
-            "supper Admin".toLowerCase() ||
-          loggedUser.isAdmin) && (
-          <div onClick={() => navigate("/withdraw")}>
-            <span
-              className={
-                darkMode
-                  ? "text-white bi bi-download mx-1 fw-bold fs-6 pointer"
-                  : "text-black bi bi-download mx-1 fw-bold fs-6 pointer"
-              }
-            ></span>
-          </div>
-        )}
+          "supper Admin".toLowerCase() ||
+          loggedUser?.isAdmin) && (
+            <div onClick={() => navigate("/withdraw")}>
+              <span
+                className={
+                  darkMode
+                    ? "text-white bi bi-download mx-1 fw-bold fs-6 pointer"
+                    : "text-black bi bi-download mx-1 fw-bold fs-6 pointer"
+                }
+              ></span>
+            </div>
+          )}
       </div>
       <div
         className="d-flex gap-1 text-white  align-items-center"
@@ -153,9 +156,8 @@ function NavBar() {
                     className={` d-flex align-items-center  `}
                   >
                     <span
-                      className={`me-1 ${
-                        darkMode ? "text-white" : "text-dark"
-                      }   bi bi-box-arrow-right  fs-6 fw-bolder `}
+                      className={`me-1 ${darkMode ? "text-white" : "text-dark"
+                        }   bi bi-box-arrow-right  fs-6 fw-bolder `}
                     ></span>
                     <span
                       className={`${darkMode ? "text-white" : "text-dark"}`}

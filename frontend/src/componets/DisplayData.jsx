@@ -80,22 +80,32 @@ function DisplayData() {
       // handleOrderFilter("returned");
     });
   };
+  // const applyFilter = () => {
+  //   if (fetchedWithdrawData.length > 0) {
+  //     setWithdrawData(handleOrderFilter("isPending")); // Filter after data is loaded
+  //   }
+  // };
   const applyFilter = () => {
-    if (fetchedWithdrawData.length > 0) {
-      setWithdrawData(handleOrderFilter("isPending")); // Filter after data is loaded
-    }
+    const pending = handleOrderFilter("isPending");
+    setWithdrawData(pending);
   };
+
   useEffect(() => {
     setTotalCart(cartData.length);
   }, [cartData]);
   useEffect(() => {
-    // Apply filter only after data is fetched
-    applyFilter();
-    setTotalPending(handleOrderFilter("isPending").length);
-    setTotalApproved(handleOrderFilter("isApproved").length);
-    setTotalConfirmed(handleOrderFilter("isConfirmed").length);
-    setTotalReturned(handleOrderFilter("returned").length);
+    const pending = handleOrderFilter("isPending");
+    const approved = handleOrderFilter("isApproved");
+    const confirmed = handleOrderFilter("isConfirmed");
+    const returned = handleOrderFilter("returned");
+
+    setWithdrawData(pending);
+    setTotalPending(pending.length);
+    setTotalApproved(approved.length);
+    setTotalConfirmed(confirmed.length);
+    setTotalReturned(returned.length);
   }, [fetchedWithdrawData]);
+
 
   useEffect(() => {
     if (goodsData) {
@@ -108,9 +118,9 @@ function DisplayData() {
   const handleOrderSearch = () => {
     let originalWithdrawData = [...withdrawData];
     let withdrawFilter;
-    if (loggedUser.roleName === "user") {
+    if (loggedUser?.roleName === "user") {
       withdrawFilter = originalWithdrawData.filter((item) => {
-        return item?.customerId?._id === loggedUser._id;
+        return item?.customerId?._id === loggedUser?._id;
       });
     } else {
       withdrawFilter = originalWithdrawData;
@@ -154,7 +164,7 @@ function DisplayData() {
     });
 
     // Set withdrawData based on the user's admin status
-    setWithdrawData(loggedUser.isAdmin ? filteredData : withdrawFilter);
+    setWithdrawData(loggedUser?.isAdmin ? filteredData : withdrawFilter);
   };
   const filterPhoto = (id) => {
     const customerPhoto = userData?.find((item) => item?._id === id);
@@ -171,20 +181,27 @@ function DisplayData() {
   };
 
   const fetchQuantityAndShortageLevel = (goodsId) => {
-    const item = priceData?.find((datas) => datas.id._id === goodsId);
+    // // const item = priceData?.find((datas) => datas.id._id === goodsId);
 
-    if (item) {
-      return item;
-    } else {
-      return 0;
-    }
+
+    // if (item) {
+    //   return item;
+    // } else {
+    //   return 0;
+    // }
+    const item = priceData?.find(
+      (datas) => datas?.id?._id === goodsId
+    );
+
+    return item || { qty: 0, shortageLevel: 0 };
+
   };
 
   const handleOrderFilter = (filterBy) => {
     // Check if fetchedWithdrawData is an array, return if not
     if (!Array.isArray(fetchedWithdrawData)) {
-      console.error("fetchedWithdrawData is not an array or is undefined");
-      return;
+      // console.error("fetchedWithdrawData is not an array or is undefined");
+      return [];
     }
 
     let filteredData = [...fetchedWithdrawData];
@@ -197,7 +214,7 @@ function DisplayData() {
       // loggedUser?.roleName?.name !== "store manager"
     ) {
       filteredData = filteredData.filter(
-        (item) => item?.customerId?._id === loggedUser._id
+        (item) => item?.customerId?._id === loggedUser?._id
       );
     } else {
       filteredData = [...fetchedWithdrawData];
@@ -205,25 +222,25 @@ function DisplayData() {
     switch (filterBy) {
       case "isApproved":
         filteredData = filteredData.filter(
-          (data) => data.isPending && data.isApproved && !data.isConfirmed
+          (data) => data?.isPending && data?.isApproved && !data?.isConfirmed
         );
         break;
       case "isPending":
         filteredData = filteredData.filter(
-          (data) => data.isPending && !data.isApproved && !data.isConfirmed
+          (data) => data?.isPending && !data?.isApproved && !data?.isConfirmed
         );
         break;
       case "isConfirmed":
         filteredData = filteredData.filter(
           (data) =>
-            data.isPending &&
-            data.isConfirmed &&
-            data.isApproved &&
-            !data.returned
+            data?.isPending &&
+            data?.isConfirmed &&
+            data?.isApproved &&
+            !data?.returned
         );
         break;
       case "returned":
-        filteredData = filteredData.filter((data) => data.returned);
+        filteredData = filteredData.filter((data) => data?.returned);
         break;
 
       default:
@@ -265,12 +282,11 @@ function DisplayData() {
                   // setWithdrawData(handleOrderFilter(items.filter));
                   setOrderSearchedData(handleOrderFilter(items.filter));
               }}
-              className={` me-1 d-flex  p-1 pointer text-center text-dark   ${
-                selectedFilterIndex === index
-                  ? " border-bottom border-2 border-white bg-light text-dark rounded-2 "
-                  : "bg-warning "
-              }`}
-              // style={{ minWidth: "100px" }}
+              className={` me-1 d-flex  p-1 pointer text-center text-dark   ${selectedFilterIndex === index
+                ? " border-bottom border-2 border-white bg-light text-dark rounded-2 "
+                : "bg-warning "
+                }`}
+            // style={{ minWidth: "100px" }}
             >
               <div className="position-relative">
                 <span
@@ -304,7 +320,7 @@ function DisplayData() {
         <div className="m-2 goods-main-container   w-100 p-2">
           {/* {withdrawData &&
             withdrawData.map((datas, index) => ( */}
-          {orderSearchedData &&
+          {Array.isArray(orderSearchedData) && orderSearchedData.length > 0 &&
             orderSearchedData.map((datas, index) => (
               <div
                 key={index}
@@ -314,12 +330,12 @@ function DisplayData() {
                 "
               >
                 <OrderDataCard
-                  name={datas.goodsId.name}
-                  qty={datas.qty}
-                  goodsId={datas.goodsId}
-                  max={datas.goodsId.qty}
+                  name={datas?.goodsId?.name}
+                  qty={datas?.qty}
+                  goodsId={datas?.goodsId}
+                  max={datas?.goodsId?.qty}
                   fullWithdrawData={datas}
-                  photo={datas?.goodsId?.photo[0]}
+                  photo={datas?.goodsId?.photo[0] || null}
                   description={datas?.goodsId?.description}
                   userId={loggedUser}
                   customersPhoto={filterPhoto(datas?.customerId?._id)}
@@ -333,10 +349,9 @@ function DisplayData() {
       {/* )} */}
       {cartData.length > 0 && (
         <div
-          className={`d-flex w-100 justify-content-center rounded-5 p-1 px-3 ${
-            darkMode ? " text-white" : "bg-white text-dark"
-          }`}
-          //  className="bg-light  "
+          className={`d-flex w-100 justify-content-center rounded-5 p-1 px-3 ${darkMode ? " text-white" : "bg-white text-dark"
+            }`}
+        //  className="bg-light  "
         >
           <span className="bi bi-cart  me-2   "></span>
           <div className="fw-light">{translate("your cart")}</div>
@@ -345,7 +360,7 @@ function DisplayData() {
       {cartData.length > 0 && (
         <div
           className={` ${darkMode ? " text-white" : "bg-white text-dark"}`}
-          // className="bg-light p-2"
+        // className="bg-light p-2"
         >
           {
             <div className="m-2 goods-main-container">
@@ -402,9 +417,8 @@ function DisplayData() {
               style={{ width: "150px", listStyle: "none" }}
             >
               <li
-                className={`${defaultBackground} ${
-                  categoryFilter === "all" && "bg-warning "
-                } p-1`}
+                className={`${defaultBackground} ${categoryFilter === "all" && "bg-warning "
+                  } p-1`}
                 onClick={() => {
                   setCategoryFilter("all"), setIsOpen(!isOpen);
                 }}
@@ -414,9 +428,8 @@ function DisplayData() {
               {categories &&
                 categories.map((cat) => (
                   <li
-                    className={`${defaultBackground} ${
-                      categoryFilter === cat.name && "bg-warning text-dark "
-                    } p-1`}
+                    className={`${defaultBackground} ${categoryFilter === cat.name && "bg-warning text-dark "
+                      } p-1`}
                     key={cat._id}
                     onClick={() => {
                       setCategoryFilter(cat.name), setIsOpen(!isOpen);

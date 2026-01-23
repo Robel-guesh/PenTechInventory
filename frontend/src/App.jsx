@@ -36,13 +36,13 @@ function PrivateRoute({ children, paths }) {
       if (
         paths === "/withdraw" &&
         loggedUser?.roleName?.name.toLowerCase() ===
-          "store keeper".toLocaleLowerCase()
+        "store keeper".toLocaleLowerCase()
       ) {
         navigate("/withdraw");
       } else if (
         paths === "/report" &&
         loggedUser.roleName.name.toLowerCase() ===
-          "store manager".toLocaleLowerCase()
+        "store manager".toLocaleLowerCase()
       ) {
         navigate("/report");
       } else if (
@@ -56,6 +56,11 @@ function PrivateRoute({ children, paths }) {
 
   return loggedUser ? children : null;
 }
+// function PrivateRoute({ children }) {
+//   // Client-side protections disabled for development.
+//   // Allow all children to render so pages are accessible without login.
+//   return children;
+// }
 function App() {
   const { defaultBackground } = useAppContext();
   return (

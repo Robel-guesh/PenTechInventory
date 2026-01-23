@@ -33,12 +33,12 @@ const purchaseSchema = new mongoose.Schema({
   supplierId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "supplier", // Reference to supplier model
-    required: true,
+    required: false,
   },
   goodsStatusId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "status",
-    required: true,
+    required: false,
   },
   typeId: {
     type: mongoose.Schema.Types.ObjectId,

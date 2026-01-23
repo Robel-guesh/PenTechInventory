@@ -3,6 +3,7 @@ const goods = require("../models/goods");
 
 // Create a new purchase
 exports.createPurchase = async (req, res) => {
+
   try {
     // Create the new purchase entry first
     const purchaseData = new purchase({
@@ -12,11 +13,11 @@ exports.createPurchase = async (req, res) => {
       sellingPrice: req.body.sellingPrice,
       storeLocationId: req.body.storeLocationId,
       userId: req.body.userId, // Changed from userID to userId
-      supplierId: req.body.supplierId,
-      goodsStatusId: req.body.goodsStatusId,
+      supplierId: req.body.supplierId || null,
+      goodsStatusId: req.body.goodsStatusId || null,
+
       typeId: req.body.typeId, // Changed from typeID to typeId
     });
-
     // Save the new purchase data
     await purchaseData.save();
 
